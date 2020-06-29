@@ -59,8 +59,6 @@ category_map:
   文字: article
   閱讀: reading
   筆記: note
-  leetcode: leetcodes
-  cpp: cpp
 tag_map:
 
 # Date / Time format
