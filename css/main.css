@@ -1379,7 +1379,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #06bfff;
+    background: #8b33aa;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -1992,7 +1992,7 @@ pre code {
   width: 4px;
 }
 .post-body {
-  font-family: Arial, Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: Verdana, Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   overflow-wrap: break-word;
 }
 @media (min-width: 1200px) {
@@ -2177,7 +2177,7 @@ pre code {
 }
 .posts-expand .post-meta-container {
   color: #999;
-  font-family: Arial, Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: Verdana, Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   font-size: 0.75em;
   margin-top: 3px;
 }
