@@ -1,5 +1,5 @@
 ---
-title: AI at the Edge
+title: '[閱讀] AI at the Edge'
 date: 2023-06-09 15:55:03
 categories: reading
 tags:

@@ -1,5 +1,5 @@
 ---
-title: Run WASM application on ESP32
+title: '[tech] Run WASM application on ESP32'
 date: 2022-11-17 14:29:22
 categories: tech
 tags:

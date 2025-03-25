@@ -1,5 +1,5 @@
 ---
-title: Syntiant TinyML Remote Ctrl RC Train
+title: '[tech] Syntiant TinyML Remote Ctrl RC Train'
 date: 2022-11-29 04:31:14
 categories: tech
 tags:

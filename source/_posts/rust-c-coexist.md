@@ -1,5 +1,5 @@
 ---
-title: Rust and C coexist
+title: '[tech] Rust and C coexist'
 date: 2022-11-14 12:10:23
 categories: tech
 tags:

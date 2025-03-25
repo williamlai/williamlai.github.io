@@ -102,7 +102,6 @@ menu:
   閱讀: /categories/reading/ || fa fa-th
   詩: /categories/poem/ || fa fa-th
   tech: /categories/tech/ || fa fa-th
-  leetcode: /categories/leetcode/ || fa fa-th
   tags: /tags/ || fa fa-tags
   categories: /categories/ || fa fa-th
   archives: /archives/ || fa fa-archive
@@ -462,7 +461,7 @@ font:
   # Font settings for posts (.post-body).
   posts:
     external: true
-    family: Arial
+    family: Verdana
 
   # Font settings for <code> and code blocks.
   codes:

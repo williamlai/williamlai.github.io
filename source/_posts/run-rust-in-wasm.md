@@ -1,5 +1,5 @@
 ---
-title: Run Rust in WASM
+title: '[tech] Run Rust in WASM'
 date: 2022-11-21 16:57:48
 categories: tech
 tags:

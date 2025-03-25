@@ -1,5 +1,5 @@
 ---
-title: Syntiant TinyML Robot Car
+title: '[tech] Syntiant TinyML Robot Car'
 date: 2022-11-01 17:15:01
 categories: tech
 tags:

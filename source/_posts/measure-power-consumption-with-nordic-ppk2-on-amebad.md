@@ -1,5 +1,5 @@
 ---
-title: Measure Power Consumption With Nordic PPK2 on AmebaD
+title: '[tech] Measure Power Consumption With Nordic PPK2 on AmebaD'
 date: 2022-10-14 10:32:46
 categories: tech
 tags:

@@ -1,5 +1,5 @@
 ---
-title: AI製造商沒說的祕密 (Genius Makers)
+title: '[閱讀] AI製造商沒說的祕密 (Genius Makers)'
 date: 2022-11-10 12:21:51
 categories: reading
 tags:
