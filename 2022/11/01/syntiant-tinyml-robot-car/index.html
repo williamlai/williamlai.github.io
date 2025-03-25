@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="I built a small robot car that can be controlled by voice. I use the Syntiant TinyML development board to recognize voice commands “go” and “stop,” and then control the TB6612FNG DC motor drive accord">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Syntiant TinyML Robot Car">
+<meta property="og:url" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/index.html">
+<meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
+<meta property="og:description" content="I built a small robot car that can be controlled by voice. I use the Syntiant TinyML development board to recognize voice commands “go” and “stop,” and then control the TB6612FNG DC motor drive accord">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://img.youtube.com/vi/gU9Gy3q3VfY/0.jpg">
+<meta property="article:published_time" content="2022-11-01T09:15:01.000Z">
+<meta property="article:modified_time" content="2025-03-25T12:52:36.361Z">
+<meta property="article:author" content="William Lai">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Syntiant">
+<meta property="article:tag" content="NDP101">
+<meta property="article:tag" content="Car">
+<meta property="article:tag" content="Robot">
+<meta property="article:tag" content="TB6612FNG">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.youtube.com/vi/gU9Gy3q3VfY/0.jpg">
+
+
+<link rel="canonical" href="http://example.com/2022/11/01/syntiant-tinyml-robot-car/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/11/01/syntiant-tinyml-robot-car/","path":"2022/11/01/syntiant-tinyml-robot-car/","title":"Syntiant TinyML Robot Car"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Syntiant TinyML Robot Car | 平凡事物 / Oridinary Life</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">平凡事物 / Oridinary Life</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-日記"><a href="/categories/diary/" rel="section"><i class="fa fa-th fa-fw"></i>日記</a></li><li class="menu-item menu-item-閱讀"><a href="/categories/reading/" rel="section"><i class="fa fa-th fa-fw"></i>閱讀</a></li><li class="menu-item menu-item-詩"><a href="/categories/poem/" rel="section"><i class="fa fa-th fa-fw"></i>詩</a></li><li class="menu-item menu-item-tech"><a href="/categories/tech/" rel="section"><i class="fa fa-th fa-fw"></i>tech</a></li><li class="menu-item menu-item-leetcode"><a href="/categories/leetcode/" rel="section"><i class="fa fa-th fa-fw"></i>leetcode</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Syntiant-TinyML"><span class="nav-number">1.</span> <span class="nav-text">Syntiant TinyML</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Edge-Impulse"><span class="nav-number">2.</span> <span class="nav-text">Edge Impulse</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Robot-Car-Example"><span class="nav-number">3.</span> <span class="nav-text">Robot Car Example</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TinyML-tutorial"><span class="nav-number">3.1.</span> <span class="nav-text">TinyML tutorial</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DC-motor-controller"><span class="nav-number">3.2.</span> <span class="nav-text">DC motor controller</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Add-code-to-control-motors"><span class="nav-number">3.3.</span> <span class="nav-text">Add code to control motors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Assemble-parts-and-test-them"><span class="nav-number">3.4.</span> <span class="nav-text">Assemble parts and test them</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conclusion"><span class="nav-number">4.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">William Lai</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/01/syntiant-tinyml-robot-car/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="William Lai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Syntiant TinyML Robot Car | 平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Syntiant TinyML Robot Car
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-11-01 17:15:01" itemprop="dateCreated datePublished" datetime="2022-11-01T17:15:01+08:00">2022-11-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-03-25 20:52:36" itemprop="dateModified" datetime="2025-03-25T20:52:36+08:00">2025-03-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/tech/" itemprop="url" rel="index"><span itemprop="name">tech</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>I built a small robot car that can be controlled by voice. I use the Syntiant TinyML development board to recognize voice commands “go” and “stop,” and then control the TB6612FNG DC motor drive accordingly.</p>
+<span id="more"></span>
+
+<h1 id="Syntiant-TinyML"><a href="#Syntiant-TinyML" class="headerlink" title="Syntiant TinyML"></a>Syntiant TinyML</h1><p><a target="_blank" rel="noopener" href="https://www.syntiant.com/">Syntiant</a> is known for a provider of edge AI processor soltuion with always-on and low-power. TinyML board is their evaluation board that we can buy on <a target="_blank" rel="noopener" href="https://www.digikey.com/en/products/detail/syntiant-corp./SYNTIANT%2520TINYML/15293343?utm_adgroup=Evaluation%20Boards%20-%20Embedded%20-%20MCU,%20DSP&utm_source=google&utm_medium=cpc&utm_campaign=Shopping_Product_Development%20Boards,%20Kits,%20Programmers_NEW&utm_term=&utm_content=Evaluation%20Boards%20-%20Embedded%20-%20MCU,%20DSP&gclid=CjwKCAjwh4ObBhAzEiwAHzZYU41yvERYEPr_n76biaxilYPi7i3pOVApiZlteuIWdJEWnDL6IRch2RoCaTIQAvD_BwE">Digi-Keys</a>.</p>
+<p>On the TinyML board is NDP101, a deep learning inference processor that costs less than <strong>140uW</strong> and is more efficient than traditional CPU and DSP. It’s suitable for audio and sensor applications. The following picture is its pinout.</p>
+
+
+<p>In the picture, there is another MCU. It’s Microchip SAMD21 which is the same one as Arduino MKR ZERO. It plays a role in the application process, providing more application peripherals.</p>
+<p>Most of the time, SAMD21, the application processor, can stay in sleep or deep sleep mode until NDP101 inference a different result, then NDP101 wakes SAMD21 up to handle the change.</p>
+<p>The NDP101 is also tiny, and so is the TinyML board. So it can fit into small devices.</p>
+<h1 id="Edge-Impulse"><a href="#Edge-Impulse" class="headerlink" title="Edge Impulse"></a>Edge Impulse</h1><p>Machine learning and deep learning are complicated and require specialties. MCU is another domain that is also needed specialties. Edge ML combines these two domains, which makes it harder to build excellent applications.</p>
+<p><a target="_blank" rel="noopener" href="https://www.edgeimpulse.com/">Edge Impulse</a> is a development platform for machine learning on edge devices and tries to make things easier. Edge Impulse provides a whole development process, including data collection, model selection, training model, and SDK for deploying to the target edge device. The edge device I’m going to use is Syntiant TinyML.</p>
+<h1 id="Robot-Car-Example"><a href="#Robot-Car-Example" class="headerlink" title="Robot Car Example"></a>Robot Car Example</h1><p>In the example, I want to build a robot car that can be controlled by voice, and it should be small.</p>
+<p>The TinyML tutorial uses Edge Impulse and makes it able to recognize audio in two words, “go” and “stop.” So I’m gonna apply this tutorial to build a small robot car. Here are the steps.</p>
+<ol>
+<li>Follow the TinyML tutorial and upload code to TinyML.</li>
+<li>Find a DC motor controller.</li>
+<li>Add code to control motors.</li>
+<li>Assemble parts and test them.</li>
+</ol>
+<h2 id="TinyML-tutorial"><a href="#TinyML-tutorial" class="headerlink" title="TinyML tutorial"></a>TinyML tutorial</h2><p>On the <a target="_blank" rel="noopener" href="https://www.syntiant.com/tinyml">TinyML web page</a>, there are <a target="_blank" rel="noopener" href="https://www.syntiant.com/_files/ugd/64a391_12ad538fb5864834854209cd8fa7aa78.pdf">TinyML Board Tutorial (for Mac)</a> and <a target="_blank" rel="noopener" href="https://www.syntiant.com/_files/ugd/64a391_8acb0f3c9faa49c9a9257f1a01beb95a.pdf">TinyML Board Tutorial (for Windows)</a>.</p>
+<p>In the tutorial, there is a project on Edge Impulse with a fine dataset and a trained model. We can just clone it and use it on our project.</p>
+<p>The dataset is an audio dataset with three labels, <em>“go,” “stop,” and “z_openset.”</em> The <em>“z_openset”</em> category is for audio that does not belong to <em>“go”</em> and <em>“stop.”</em> The training&#x2F;testing dataset ratio is around 80&#x2F;20, which is the recommended ratio from Edge Impulse.</p>
+<p>The model in the project follows Edge Impules’ pipeline template. The following picture shows the pipeline in the project.</p>
+
+
+<p>The first stage is for the dataset, and the last state is for output features. The second stage is “Audio (Syntiant),” which is the log of MFE (Mel-Filterbank Energy). In this stage, it extracts features from raw samples, which are the inputs of the third stage. The third stage, it’s a neural network classification model, which is a model in Keras.</p>
+
+
+<p>The inference requires large computations. In real-time recognition, the device has to complete the inference within the window size. For example, to complete an inference on a 968ms audio sample, the device has to make an inference within a 484ms window size. And the TinyML board is capable of completing the inference within a window size.</p>
+<p>In the deployment, Edge Impulse provides either binaries or source code. Both use Arduino CLI for uploading binaries through a serial interface. The SAMD21 has a USB host HW and provides a serial interface when a USB connects to the TinyML board. SAMD21 is also responsible for uploading the trained model to NDP101. Here I upload the binary first to check if everything works fine.</p>
+<p>So when the tutorial finishes, it’ll show a green light when it recognizes “go” and a red light when it recognizes “stop.”</p>
+<h2 id="DC-motor-controller"><a href="#DC-motor-controller" class="headerlink" title="DC motor controller"></a>DC motor controller</h2><p>In this model, the robot car can only go or stop, and I can select a DC motor controller that supports only one motor and then apply the same action on two motors. But I prefer to use a motor controller that controls two motors for different actions so that it can do more if I have a model that supports “turn left,” “turn right,” and “backward.”</p>
+<p>L298N is a common choice for controlling 2 DC motors because it can drive a motor that consumes a large current, which means this motor controller is for applications with heavy loading.</p>
+<p>However, the TinyML board is quite small because the NDP101 is small so it can fit into a tiny space. Here I choose <strong>TB6612FNG</strong> as my DC motor controller. TB6612FNG is small, too. And it can drive two motors with a 1.2A maximum each.</p>
+
+
+
+<div style="text-align: center;">TB6612FNG image from Sparkfun</div>
+
+
+<p>These are input control pins.</p>
+<ul>
+<li>PWMA, PWMB: it controls the speed of the motor A and motor B.</li>
+<li>AIN1, AIN2, BIN1, BIN2: These pins control the motor’s rotation.<ul>
+<li>AIN1&#x3D;0, AIN2&#x3D;0: Motor stops.</li>
+<li>AIN1&#x3D;1, AIN2&#x3D;0: Motor rotates in clockwise.</li>
+<li>AIN1&#x3D;0, AIN2&#x3D;1: Motor rotates in counter-clockwise.</li>
+<li>AIN1&#x3D;1, AIN2&#x3D;1: Motor short breaks.</li>
+</ul>
+</li>
+</ul>
+<p>These are output control pins.</p>
+<ul>
+<li>A01, A02, B01, B02: These pins output signals to motors.<ul>
+<li>A01&#x3D;0, A02&#x3D;0: Motor stops.</li>
+<li>A01&#x3D;1, A02&#x3D;0: Motor rotates in clockwise.</li>
+<li>A01&#x3D;0, A02&#x3D;1: Motor rotates in counter-clockwise.</li>
+</ul>
+</li>
+</ul>
+<p>These are power-related pins.</p>
+<ul>
+<li>VM: Power source of motors and motor controller. It accepts 2.5V~13.5V. Typically we’ll use a voltage larger than 3.7V.</li>
+<li>VCC: It provides the power source for the application.</li>
+<li>STBY: It’s a standby pin. When STBY&#x3D;0, it’ll turn off VCC. TB6612FNG checks the STBY after boot up. If the application cannot set STBY to 1 within this window, then TB6612FNG will turn off VCC.</li>
+<li>GND</li>
+</ul>
+<h2 id="Add-code-to-control-motors"><a href="#Add-code-to-control-motors" class="headerlink" title="Add code to control motors"></a>Add code to control motors</h2><p>There are five pins available on TinyML for peripheral usage. These pins are connected to SAMD21 so we can program them just like Arduino MKR ZERO.</p>
+<p>There are also pins on test points. But I don’t want to weld the TinyML board and make it look unpleasant, so I won’t use these pins.</p>
+
+
+<p>We can check the <a target="_blank" rel="noopener" href="https://github.com/arduino/ArduinoCore-samd/blob/master/variants/mkrzero/variant.cpp">MKR ZERO variant table</a> to use these pins in Arduino API.</p>
+<ul>
+<li>PA02: It’s pin 15 in Arduino API, and it’s a analog pin which can be ADC or DAC.</li>
+<li>PA21, PA20: They are pin 7 and pin 6 in Arduino API. They can be programmed as GPIO, PWM, and UART. In Edge Impulse SDK, they have been programmed as a UART2 instance for printing debug information.</li>
+<li>PA23, PA22: They are pin 1 and pin 0 in Arduino API. They can be programmed as GPIO, PWM, and UART.</li>
+</ul>
+<p>Since there needed to be more pins to control the 2 DC motor controller fully, my first try was adding another MCU to expand the pins. So I picked another Arduino MKR ZERO board and wrote a log parser to parse the message from TinyML’s UART. In this way, I can keep Edge Impulse SDK unchanged. Then I added code for motor control. I put TinyML, TB6612FNG, Arduino MKR ZERO, 2 motors with wheels, and battry all together, and it worked well on the breadboard. Then I assembled them as a robot car. But…they’re too heavy so the small motors couldn’t move. That means I need to remove parts, including the expanded MCU (Arduino MKR Zero).</p>
+<p>I then considered using TinyML only and using two pins only for the “go” and “stop” movements. I made the following arrangement for the DC motor controller.</p>
+<ul>
+<li>STBY&#x3D;1: Connect the STBY to constantly HIGH value.</li>
+<li>AIN1&#x3D;1, AIN2&#x3D;0, BIN1&#x3D;1, BIN2&#x3D;0: Make both two motors always rotate clockwise.</li>
+<li>PWMA, PWMB: Connect these two pins to TinyML. PWMA&#x3D;0 &amp; PWMB&#x3D;0 means stop, and PWMA&gt;0 &amp; PWMB&gt;0 means go.</li>
+</ul>
+<p>In this way, I can’t make it turn left&#x2F;right or backward, but at least the motors may afford the loading.</p>
+<p>I attempted to use pin PA23 and pin PA22, but it seems it has been used by the USB host. If I configure PA23 and PA22 successfully, the USB host won’t work. From the logic analyzer, there are some periodical signals. So give up using these two pins.</p>
+<p>To use PA21, and PA20, which are the UART pins, I need to find a way to bypass or disable <code>Serial2</code>. The source code <code>syntiant.cpp</code> configures Serial2 with pins 6 and 7 in the following way.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">pinPeripheral</span>(<span class="number">6</span>, PIO_SERCOM_ALT);</span><br><span class="line"><span class="built_in">pinPeripheral</span>(<span class="number">7</span>, PIO_SERCOM_ALT);</span><br></pre></td></tr></table></figure>
+
+<p>I modified it to use other pins.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">pinPeripheral</span>(<span class="number">0</span>, PIO_SERCOM_ALT);</span><br><span class="line"><span class="built_in">pinPeripheral</span>(<span class="number">1</span>, PIO_SERCOM_ALT);</span><br></pre></td></tr></table></figure>
+
+<p>So the <code>Serial2</code> now using pins 0 and 1. Then I can use pins 6 and 7 as PWM with following sample code.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> MOTOR_A_PWM_PIN 6</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MOTOR_B_PWM_PIN 7</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">int</span> speed = <span class="number">255</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">on_classification_changed</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *event, <span class="type">float</span> confidence, <span class="type">float</span> anomaly_score)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// here you can write application code, e.g. to toggle LEDs based on keywords</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">strcmp</span>(event, <span class="string">&quot;stop&quot;</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// Toggle LED</span></span><br><span class="line">        <span class="built_in">digitalWrite</span>(LED_RED, HIGH);</span><br><span class="line">        <span class="built_in">analogWrite</span>(MOTOR_A_PWM_PIN, <span class="number">0</span>);</span><br><span class="line">        <span class="built_in">analogWrite</span>(MOTOR_B_PWM_PIN, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">strcmp</span>(event, <span class="string">&quot;go&quot;</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// Toggle LED</span></span><br><span class="line">        <span class="built_in">digitalWrite</span>(LED_GREEN, HIGH);</span><br><span class="line">        <span class="built_in">analogWrite</span>(MOTOR_A_PWM_PIN, speed);</span><br><span class="line">        <span class="built_in">analogWrite</span>(MOTOR_B_PWM_PIN, speed);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">setup</span><span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">pinMode</span>(MOTOR_A_PWM_PIN, OUTPUT);</span><br><span class="line">    <span class="built_in">pinMode</span>(MOTOR_B_PWM_PIN, OUTPUT);</span><br><span class="line">    <span class="built_in">analogWrite</span>(MOTOR_A_PWM_PIN, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">analogWrite</span>(MOTOR_B_PWM_PIN, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">syntiant_setup</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">loop</span><span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">syntiant_loop</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Assemble-parts-and-test-them"><a href="#Assemble-parts-and-test-them" class="headerlink" title="Assemble parts and test them"></a>Assemble parts and test them</h2><p>Here is the list of parts.</p>
+<ul>
+<li>Syntiant TinyML board</li>
+<li>TB6612FNG</li>
+<li>2 ‘130 size’ DC hobby motors</li>
+<li>2 29.5mm wheels</li>
+<li>1 Caster Bearing Wheel</li>
+<li>Popsicle sticks - I use popsicle sticks as the body of the robot car. They are light and easy to assemble and reshape.</li>
+<li>500mAH LiPo battery</li>
+<li>1 2P Rocker switch</li>
+</ul>
+<p>The following diagram shows the connection logic.</p>
+
+
+<p>Here are some pictures of my robot car. The wiring is ugly, but putting all the wires in a small place is pretty hard. I used 3 popsicle sticks to make a triangle-shaped body and white glue to glue the motors. I also use tapes to stable other parts.</p>
+
+
+
+
+<p>So the car is pretty small. The heaviest loading would be the battery and the Dupont wires. It’ll be lighter if I use single-core wires, but it’ll make the parts hard to reuse.</p>
+<p>And here is the demo video.</p>
+<p><a target="_blank" rel="noopener" href="https://youtube.com/shorts/gU9Gy3q3VfY">https://youtube.com/shorts/gU9Gy3q3VfY</a></p>
+<p><a target="_blank" rel="noopener" href="https://youtube.com/shorts/gU9Gy3q3VfY"><img src="http://img.youtube.com/vi/gU9Gy3q3VfY/0.jpg" alt="IMAGE ALT TEXT"></a></p>
+<p>I tried to play it on carpet and texture wooden floor, but it won’t move due to friction.</p>
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>It’s a pity that I can’t control it to do backward, left, and right turn. But it’s hard to train a voice model, especially with motor noise. Even if I have the model, getting enough pins is still a problem.</p>
+<p>I have lots of fun studying this project and making it works. And TinyML is an excellent device for realizing edge ML. Good job, Syntiant.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/Syntiant/" rel="tag"># Syntiant</a>
+              <a href="/tags/NDP101/" rel="tag"># NDP101</a>
+              <a href="/tags/Car/" rel="tag"># Car</a>
+              <a href="/tags/Robot/" rel="tag"># Robot</a>
+              <a href="/tags/TB6612FNG/" rel="tag"># TB6612FNG</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/10/28/leetcode-0002-add-two-numbers/" rel="prev" title="Leetcode 0002 Add Two Numbers">
+                  <i class="fa fa-angle-left"></i> Leetcode 0002 Add Two Numbers
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/10/20221110-reading-genius-makers/" rel="next" title="AI製造商沒說的祕密 (Genius Makers)">
+                  AI製造商沒說的祕密 (Genius Makers) <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">William Lai</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

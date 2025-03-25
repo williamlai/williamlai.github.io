@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Based on the article Run WASM application on ESP32, I’m gonna try to run Rust on the ESP32 WASM runtime.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Run Rust in WASM">
+<meta property="og:url" content="http://example.com/2022/11/21/run-rust-in-wasm/index.html">
+<meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
+<meta property="og:description" content="Based on the article Run WASM application on ESP32, I’m gonna try to run Rust on the ESP32 WASM runtime.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-11-21T08:57:48.000Z">
+<meta property="article:modified_time" content="2025-03-25T12:52:36.351Z">
+<meta property="article:author" content="William Lai">
+<meta property="article:tag" content="rust">
+<meta property="article:tag" content="wasm">
+<meta property="article:tag" content="esp32">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/11/21/run-rust-in-wasm/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/11/21/run-rust-in-wasm/","path":"2022/11/21/run-rust-in-wasm/","title":"Run Rust in WASM"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Run Rust in WASM | 平凡事物 / Oridinary Life</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">平凡事物 / Oridinary Life</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-日記"><a href="/categories/diary/" rel="section"><i class="fa fa-th fa-fw"></i>日記</a></li><li class="menu-item menu-item-閱讀"><a href="/categories/reading/" rel="section"><i class="fa fa-th fa-fw"></i>閱讀</a></li><li class="menu-item menu-item-詩"><a href="/categories/poem/" rel="section"><i class="fa fa-th fa-fw"></i>詩</a></li><li class="menu-item menu-item-tech"><a href="/categories/tech/" rel="section"><i class="fa fa-th fa-fw"></i>tech</a></li><li class="menu-item menu-item-leetcode"><a href="/categories/leetcode/" rel="section"><i class="fa fa-th fa-fw"></i>leetcode</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#How-to-run-Rust-on-ESP32-WASM-engine"><span class="nav-number">1.</span> <span class="nav-text">How to run Rust on ESP32 WASM engine</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Recude-footprint-in-Rust"><span class="nav-number">2.</span> <span class="nav-text">Recude footprint in Rust</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#No-standard-library"><span class="nav-number">2.1.</span> <span class="nav-text">No standard library</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Panic-handler"><span class="nav-number">2.1.1.</span> <span class="nav-text">Panic handler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#eh-personality"><span class="nav-number">2.1.2.</span> <span class="nav-text">eh_personality</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Entry-point"><span class="nav-number">2.2.</span> <span class="nav-text">Entry point</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Print-Hello-World"><span class="nav-number">2.3.</span> <span class="nav-text">Print Hello World</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Run-Rust-program-in-WASM"><span class="nav-number">3.</span> <span class="nav-text">Run Rust program in WASM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Why-embeded-Rust"><span class="nav-number">4.</span> <span class="nav-text">Why embeded Rust?</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">William Lai</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/21/run-rust-in-wasm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="William Lai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Run Rust in WASM | 平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Run Rust in WASM
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-11-21 16:57:48" itemprop="dateCreated datePublished" datetime="2022-11-21T16:57:48+08:00">2022-11-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-03-25 20:52:36" itemprop="dateModified" datetime="2025-03-25T20:52:36+08:00">2025-03-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/tech/" itemprop="url" rel="index"><span itemprop="name">tech</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Based on the article <a target="_blank" rel="noopener" href="https://williamlai.github.io/2022/11/17/run-wasm-app-on-esp32/">Run WASM application on ESP32</a>, I’m gonna try to run Rust on the ESP32 WASM runtime.</p>
+<span id="more"></span>
+
+<h1 id="How-to-run-Rust-on-ESP32-WASM-engine"><a href="#How-to-run-Rust-on-ESP32-WASM-engine" class="headerlink" title="How to run Rust on ESP32 WASM engine"></a>How to run Rust on ESP32 WASM engine</h1><p>The ESP32 WASM runtime is one of the <a target="_blank" rel="noopener" href="https://github.com/bytecodealliance/wasm-micro-runtime">WAMR</a> implementations. Since it runs on top of MCU, we expect it only to have a few megabytes of memory.</p>
+<p>For a Rust application, it has to be:</p>
+<ul>
+<li>No Rust standard library: It’s impossible to put all Rust standard libraries into either WAMR or ESP32 native environment.</li>
+<li>No default entry: Like what we did in The C application, the WASM application doesn’t have a traditional entry point.</li>
+</ul>
+<p>This means we have to make a Rust application small enough, and then we can consider compiling it into WASM byte code.</p>
+<h1 id="Recude-footprint-in-Rust"><a href="#Recude-footprint-in-Rust" class="headerlink" title="Recude footprint in Rust"></a>Recude footprint in Rust</h1><p>Let’s take an empty main function example. Create a project named <code>hello</code> with command <code>cargo new hello</code>. The content of <code>src/main.rs</code> is as follows.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Make a release build with the command <code>cargo build --release</code>. The size of the executable on a Linux x86_64 machine is around 4MB.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ls -l target/release/hello</span><br><span class="line">-rwxr-xr-x 2 william william 4027256 Nov 22 05:11 target/release/hello</span><br></pre></td></tr></table></figure>
+
+<p>And we can see it has the following dependent libraries.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ ldd target/release/hello</span><br><span class="line">        linux-vdso.so.1 (0x00007fffc7ae9000)</span><br><span class="line">        libgcc_s.so.1 =&gt; /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007ff06db80000)</span><br><span class="line">        libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007ff06db5d000)</span><br><span class="line">        libdl.so.2 =&gt; /lib/x86_64-linux-gnu/libdl.so.2 (0x00007ff06db50000)</span><br><span class="line">        libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007ff06d950000)</span><br><span class="line">        /lib64/ld-linux-x86-64.so.2 (0x00007ff06dc04000)</span><br></pre></td></tr></table></figure>
+
+<h2 id="No-standard-library"><a href="#No-standard-library" class="headerlink" title="No standard library"></a>No standard library</h2><p>By default, a Rust program is built with Rust standard library, which includes <code>Box</code>, <code>String</code>, <code>Vec</code>, <code>Hashmap</code>, etc. We can use <code>#![no_std]</code> tag to explicitly not use Rust standard library.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>However, it won’t build with the following error messages.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cargo build --release</span><br><span class="line">   Compiling hello v0.1.0 (/mnt/c/workspace/temp/hello)</span><br><span class="line">error: `#[panic_handler]` function required, but not found</span><br><span class="line"></span><br><span class="line">error: language item required, but not found: `eh_personality`</span><br><span class="line">  |</span><br><span class="line">  = note: this can occur when a binary crate with `#![no_std]` is compiled for a target where `eh_personality` is defined in the standard library</span><br><span class="line">  = help: you may be able to compile for a target that doesn&#x27;t need `eh_personality`, specify a target with `--target` or in `.cargo/config`</span><br><span class="line"></span><br><span class="line">error: could not compile `hello` due to 2 previous errors</span><br></pre></td></tr></table></figure>
+
+<p>So there are two errors to be fixed, “panic handler” and “<code>eh_personality</code>“.</p>
+<h3 id="Panic-handler"><a href="#Panic-handler" class="headerlink" title="Panic handler"></a>Panic handler</h3><p>The first one is the panic handler. The default panic handler is included in the Rust standard library. Since we don’t use it, we must provide our panic handler.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> core::panic::PanicInfo;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">my_panic_handler</span>(_info: &amp;PanicInfo) <span class="punctuation">-&gt;</span> ! &#123;</span><br><span class="line">    <span class="keyword">loop</span> &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="eh-personality"><a href="#eh-personality" class="headerlink" title="eh_personality"></a>eh_personality</h3><p>The second error is <code>eh_personality</code>. It’s a feature to unwind the stack and show the backtrace. The default implementation of <code>eh_personality</code> is included in the Rust standard library. There are two approaches to fixing this error.</p>
+<p>The first approach is to specify the panic handle to “abort”. This makes Rust abort when an error happens. In the <code>Cargo.toml</code>, add the following.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[profile.dev]</span><br><span class="line">panic = &quot;abort&quot;</span><br><span class="line"></span><br><span class="line">[profile.release]</span><br><span class="line">panic = &quot;abort&quot;</span><br></pre></td></tr></table></figure>
+
+<p>The second approach is adding our own <code>eh_personality</code> function as follows. In this approach, it can only build for nightly Rust build instead of stable Rust build.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"><span class="meta">#![feature(lang_items)]</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#[lang = <span class="string">&quot;eh_personality&quot;</span>]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="keyword">fn</span> <span class="title function_">eh_personality</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> core::panic::PanicInfo;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">my_panic_handler</span>(_info: &amp;PanicInfo) <span class="punctuation">-&gt;</span> ! &#123;</span><br><span class="line">    <span class="keyword">loop</span> &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>I prefer the first approach.</p>
+<h2 id="Entry-point"><a href="#Entry-point" class="headerlink" title="Entry point"></a>Entry point</h2><p>As we fixed the panic handler and <code>eh_personality</code>, we still get the following error in the build.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cargo build --release</span><br><span class="line">   Compiling hello v0.1.0 (/mnt/c/workspace/temp/hello)</span><br><span class="line">error: requires `start` lang_item</span><br><span class="line"></span><br><span class="line">error: could not compile `hello` due to previous error</span><br></pre></td></tr></table></figure>
+
+<p>The context of this error is that Rust requires Rust runtime. The Rust runtime is implemented in the <code>start</code> language item and is for protecting the stack, storing command line arguments, and stack unwinding. It’ll then call the <code>main</code> function when these features are ready.</p>
+<p>The <code>start</code> language item is included in the Rust standard library, which means we don’t have a Rust runtime when we don’t use the Rust standard library. Therefore, we don’t need the Rust entry point <code>main</code> by adding <code>#![no_main]</code>, and we need to provide an entry point function. It’s <code>_start</code> in Linux. The content of <code>src/main.rs</code> is as follows.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"><span class="meta">#![no_main]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> core::panic::PanicInfo;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">my_panic_handler</span>(_info: &amp;PanicInfo) <span class="punctuation">-&gt;</span> ! &#123;</span><br><span class="line">    <span class="keyword">loop</span> &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">extern</span> <span class="keyword">fn</span> <span class="title function_">_start</span>() <span class="punctuation">-&gt;</span> ! &#123;</span><br><span class="line">    <span class="keyword">loop</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The implementation of the <code>_start</code> function is an infinite loop because we don’t have a proper way to exit the program right now. It requires an <code>exit</code> function and implements needed codes.</p>
+<p>Now we can build it successfully with the following command. It tells the <code>ructs</code> to use the link argument <code>-nostartfiles</code>, which means don’t use default start files, and we’ll provide our own.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cargo rustc --release -- -C link-arg=-nostartfiles</span><br></pre></td></tr></table></figure>
+
+<p>We can put the link arguments in <code>.cargo/config.toml</code>, as follows.</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[target.&#x27;cfg(target_os = &quot;linux&quot;)&#x27;]</span></span><br><span class="line"><span class="attr">rustflags</span> = [<span class="string">&quot;-C&quot;</span>, <span class="string">&quot;link-arg=-nostartfiles&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>And we can build it as usual.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cargo build --release</span><br></pre></td></tr></table></figure>
+
+<p>After being built, the size of the executable is 13KB now. It can be even smaller, but it involves some ELF file surgery, which is out of scope in this article.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ls -l target/release/hello</span><br><span class="line">-rwxr-xr-x 2 william william 13600 Nov 22 06:32 target/release/hello</span><br></pre></td></tr></table></figure>
+
+<p>And it has no dependent libraries.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ldd target/release/hello</span><br><span class="line">        statically linked</span><br></pre></td></tr></table></figure>
+
+<p>We can run this program. But we have to use <code>Ctrl-C</code> to exit the program since it only has an infinite loop in the <code>_start</code> function.</p>
+<h2 id="Print-Hello-World"><a href="#Print-Hello-World" class="headerlink" title="Print Hello World"></a>Print Hello World</h2><p>So far, we only have a small program that does nothing. To be able to print “Hello, world!” or other tasks, we can still use C standard library by using <a target="_blank" rel="noopener" href="https://crates.io/crates/libc">libc crate</a>. It supports many C standard functions like <code>printf</code>, <code>malloc</code>, <code>free</code>, <code>memcpy</code>, etc. To use it, we need to add the <code>libc</code> crate in <code>Cargo.toml</code>.</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">libc</span> = <span class="string">&quot;0.2&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>Modify <code>src/main.rc</code> as follows.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"><span class="meta">#![no_main]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> core::panic::PanicInfo;</span><br><span class="line"><span class="keyword">use</span> libc::&#123;printf, exit&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">my_panic_handler</span>(_info: &amp;PanicInfo) <span class="punctuation">-&gt;</span> ! &#123;</span><br><span class="line">    <span class="keyword">loop</span> &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">extern</span> <span class="keyword">fn</span> <span class="title function_">_start</span>() &#123;</span><br><span class="line">    <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">printf</span>(<span class="string">&quot;Hello, world!\n\0&quot;</span>.<span class="title function_ invoke__">as_ptr</span>() <span class="keyword">as</span> *<span class="keyword">const</span> <span class="type">i8</span>);</span><br><span class="line">        <span class="title function_ invoke__">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Please note that there is no EOS (End-Of-String) character <code>\0</code> in the string slice in Rust, so we have to add it in case it prints out mojibake.</p>
+<p>We also use <code>exit</code>. Now our program can exit correctly.</p>
+<p>Use the following command to compile it.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo rustc --release -- -C link-args=-nostartfiles -lc</span><br></pre></td></tr></table></figure>
+
+<p>The <code>-lc</code> means linking the C library. Now we can check how it runs. It should print the message and exit successfully.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./target/release/hello</span><br><span class="line">Hello, world!</span><br></pre></td></tr></table></figure>
+
+<p>And the size is 14KB which is slightly bigger than the previous one.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">ls</span> -l target/release/hello</span><br><span class="line">-rwxr-xr-x 2 william william 14224 Nov 22 09:17 target/release/hello</span><br></pre></td></tr></table></figure>
+
+<p>It also has C library dependencies.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ ldd target/release/hello</span><br><span class="line">        linux-vdso.so.1 (0x00007fffe0238000)</span><br><span class="line">        libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f2f74b30000)</span><br><span class="line">        /lib64/ld-linux-x86-64.so.2 (0x00007f2f74d42000)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Run-Rust-program-in-WASM"><a href="#Run-Rust-program-in-WASM" class="headerlink" title="Run Rust program in WASM"></a>Run Rust program in WASM</h1><p>Refer to <a target="_blank" rel="noopener" href="https://github.com/bytecodealliance/wasm-micro-runtime/blob/main/doc/build_wasm_app.md">Build WASM application</a>, we need to install <code>wasm32-wasi</code> with the following command.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rustup target add wasm32-wasi</span><br></pre></td></tr></table></figure>
+
+<p>We can build a default “Hello, world!” Rust example with the following command.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cargo build --release --target wasm32-wasi</span><br></pre></td></tr></table></figure>
+
+<p>The size of the WASM byte code is big because it links lots of things. </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ l -l target/wasm32-wasi/release/hello.wasm</span><br><span class="line">-rwxr-xr-x 2 william william 2030863 Nov 22 10:03 target/wasm32-wasi/release/hello.wasm*</span><br></pre></td></tr></table></figure>
+
+<p>We can reduce the footprint with the hints from the previous section.</p>
+<p>The entry point of the WASM application is the <code>main</code> istead of <code>_start</code>, so we have to modify our source code as follows.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"><span class="meta">#![no_main]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> core::panic::PanicInfo;</span><br><span class="line"><span class="keyword">use</span> libc::&#123;printf, exit&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">my_panic_handler</span>(_info: &amp;PanicInfo) <span class="punctuation">-&gt;</span> ! &#123;</span><br><span class="line">    <span class="keyword">loop</span> &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">printf</span>(<span class="string">&quot;Hello, world!\n\0&quot;</span>.<span class="title function_ invoke__">as_ptr</span>() <span class="keyword">as</span> *<span class="keyword">const</span> <span class="type">i8</span>);</span><br><span class="line">        <span class="title function_ invoke__">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The content of <code>Cargo.toml</code> doesn’t change, as follows.</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[package]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;hello&quot;</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;0.1.0&quot;</span></span><br><span class="line"><span class="attr">edition</span> = <span class="string">&quot;2021&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html</span></span><br><span class="line"></span><br><span class="line"><span class="section">[profile.dev]</span></span><br><span class="line"><span class="attr">panic</span> = <span class="string">&quot;abort&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[profile.release]</span></span><br><span class="line"><span class="attr">panic</span> = <span class="string">&quot;abort&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">libc</span> = <span class="string">&quot;0.2&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>We can build it with the following commands.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cargo rustc --release --target wasm32-wasi -- -C link-arg=--initial-memory=65536 -C link-arg=-zstack-size=8192 -C link-arg=--<span class="built_in">export</span>=__heap_base -C link-arg=--<span class="built_in">export</span>=__data_end -C link-arg=--strip-all</span><br></pre></td></tr></table></figure>
+
+<p>We can also put these link arguments in <code>.cargo/config.toml</code>.</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[build]</span></span><br><span class="line"><span class="attr">rustflags</span> = [</span><br><span class="line">  <span class="string">&quot;-C&quot;</span>, <span class="string">&quot;link-arg=--initial-memory=65536&quot;</span>,</span><br><span class="line">  <span class="string">&quot;-C&quot;</span>, <span class="string">&quot;link-arg=-zstack-size=8192&quot;</span>,</span><br><span class="line">  <span class="string">&quot;-C&quot;</span>, <span class="string">&quot;link-arg=--export=__heap_base&quot;</span>,</span><br><span class="line">  <span class="string">&quot;-C&quot;</span>, <span class="string">&quot;link-arg=--export=__data_end&quot;</span>,</span><br><span class="line">  <span class="string">&quot;-C&quot;</span>, <span class="string">&quot;link-arg=--strip-all&quot;</span>,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>And build it with the following command.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cargo build --release --target wasm32-wasi</span><br></pre></td></tr></table></figure>
+
+<p>Now the size of the WASM byte code is only 250 bytes! </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">ls</span> -l target/wasm32-wasi/release/hello.wasm</span><br><span class="line">-rwxr-xr-x 2 william william 250 Nov 22 10:02 target/wasm32-wasi/release/hello.wasm</span><br></pre></td></tr></table></figure>
+
+<p>We can put the application on ESP32 WASM as we did in <a target="_blank" rel="noopener" href="https://williamlai.github.io/2022/11/17/run-wasm-app-on-esp32/#Build-WASM-application">“Build WASM application”</a>.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cp</span> target/wasm32-wasi/release/hello.wasm ./test.wasm</span><br><span class="line">$ xxd -i test.wasm &lt;PATH_TO_ESP32_PROJECT&gt;/esp32-wasm-test/main/test_wasm.h</span><br></pre></td></tr></table></figure>
+
+<p>Then go to the directory of the ESP32 WASM sample project, build and flash it. (Remember to configure related environment variables.)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ idf.py build</span><br><span class="line">$ idf.py flash monitor</span><br></pre></td></tr></table></figure>
+
+<p>We can see the following logs.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[00:00:00:659 - 3FFB7620]: warning: failed to link import function (env, __original_main)</span><br><span class="line">Hello, world!</span><br><span class="line">Exception: env.exit(0)</span><br><span class="line">E (10) wamr: Error while app_instance_main</span><br><span class="line">I (397) wamr: Exiting...</span><br></pre></td></tr></table></figure>
+
+<p>There is an exception which calling <code>exit</code>. So the WASM might have its way of exiting the program, but we don’t have to explicitly add one. Modify <code>src/main.rs</code> as follows.</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"><span class="meta">#![no_main]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> core::panic::PanicInfo;</span><br><span class="line"><span class="keyword">use</span> libc::printf;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">my_panic_handler</span>(_info: &amp;PanicInfo) <span class="punctuation">-&gt;</span> ! &#123;</span><br><span class="line">    <span class="keyword">loop</span> &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">printf</span>(<span class="string">&quot;Hello, world!\n\0&quot;</span>.<span class="title function_ invoke__">as_ptr</span>() <span class="keyword">as</span> *<span class="keyword">const</span> <span class="type">i8</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Then build WASM applications, put the byte code into the ESP32 project, build the ESP32 project, flash and check the logs.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[00:00:00:632 - 3FFB7618]: warning: failed to link import function (env, __original_main)</span><br><span class="line">Hello, world!</span><br><span class="line">I (381) wamr: Exiting...</span><br></pre></td></tr></table></figure>
+
+<p>Now it exits successfully. Great.</p>
+<h1 id="Why-embeded-Rust"><a href="#Why-embeded-Rust" class="headerlink" title="Why embeded Rust?"></a>Why embeded Rust?</h1><p>At first, it seemed pointless to me to use Rust in a resource-limited environment. To run Rust in either native MCU or WAMR in MCU, Rust won’t be able to use the Rust standard library. I guess it’s a similar situation as FreeRTOS. Although there is not enough resource or library in FreeRTOS compared to Ubuntu or other powerful platforms, running programs in a small, real-time environment is still essential. Rust can be small and efficient. Moreover, Rust brings safe code and a more productive workflow. So I think Rust does have its place in the embedded MCU environment.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rust/" rel="tag"># rust</a>
+              <a href="/tags/wasm/" rel="tag"># wasm</a>
+              <a href="/tags/esp32/" rel="tag"># esp32</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/17/run-wasm-app-on-esp32/" rel="prev" title="Run WASM application on ESP32">
+                  <i class="fa fa-angle-left"></i> Run WASM application on ESP32
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/" rel="next" title="Syntiant TinyML Remote Ctrl RC Train">
+                  Syntiant TinyML Remote Ctrl RC Train <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">William Lai</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Gathering a big enough dataset for training an AI model is always a challenge. In this project, I’m gonna use AWS Polly to generate a voice dataset and use this dataset to train a model on Edge Impuls">
+<meta property="og:type" content="article">
+<meta property="og:title" content="use-aws-polly-generate-audio-dataset">
+<meta property="og:url" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/index.html">
+<meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
+<meta property="og:description" content="Gathering a big enough dataset for training an AI model is always a challenge. In this project, I’m gonna use AWS Polly to generate a voice dataset and use this dataset to train a model on Edge Impuls">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-12-05T07:18:17.000Z">
+<meta property="article:modified_time" content="2025-03-25T12:52:36.352Z">
+<meta property="article:author" content="William Lai">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Syntiant">
+<meta property="article:tag" content="NDP101">
+<meta property="article:tag" content="AWS">
+<meta property="article:tag" content="Polly">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/","path":"2022/12/05/use-aws-polly-generate-audio-dataset/","title":"use-aws-polly-generate-audio-dataset"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>use-aws-polly-generate-audio-dataset | 平凡事物 / Oridinary Life</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">平凡事物 / Oridinary Life</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-日記"><a href="/categories/diary/" rel="section"><i class="fa fa-th fa-fw"></i>日記</a></li><li class="menu-item menu-item-閱讀"><a href="/categories/reading/" rel="section"><i class="fa fa-th fa-fw"></i>閱讀</a></li><li class="menu-item menu-item-詩"><a href="/categories/poem/" rel="section"><i class="fa fa-th fa-fw"></i>詩</a></li><li class="menu-item menu-item-tech"><a href="/categories/tech/" rel="section"><i class="fa fa-th fa-fw"></i>tech</a></li><li class="menu-item menu-item-leetcode"><a href="/categories/leetcode/" rel="section"><i class="fa fa-th fa-fw"></i>leetcode</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Ideas"><span class="nav-number">1.</span> <span class="nav-text">Ideas</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Generate-dataset"><span class="nav-number">2.</span> <span class="nav-text">Generate dataset</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-one-synthesize-voice-from-Polly"><span class="nav-number">2.0.1.</span> <span class="nav-text">Create one synthesize voice from Polly</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Change-audio-speed-and-pitch-by-FFmpeg"><span class="nav-number">2.0.2.</span> <span class="nav-text">Change audio speed and pitch by FFmpeg</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Audio-filename"><span class="nav-number">2.0.3.</span> <span class="nav-text">Audio filename</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Use-sample-code-to-generate-the-aduio-dataset"><span class="nav-number">2.0.4.</span> <span class="nav-text">Use sample code to generate the aduio dataset</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Test-on-Syntiant-TinyML"><span class="nav-number">3.</span> <span class="nav-text">Test on Syntiant TinyML</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conclusion"><span class="nav-number">4.</span> <span class="nav-text">Conclusion</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#05-30-2023-updated"><span class="nav-number">4.0.1.</span> <span class="nav-text">05&#x2F;30&#x2F;2023 updated</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">William Lai</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="William Lai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="use-aws-polly-generate-audio-dataset | 平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          use-aws-polly-generate-audio-dataset
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-12-05 15:18:17" itemprop="dateCreated datePublished" datetime="2022-12-05T15:18:17+08:00">2022-12-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-03-25 20:52:36" itemprop="dateModified" datetime="2025-03-25T20:52:36+08:00">2025-03-25</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Gathering a big enough dataset for training an AI model is always a challenge. In this project, I’m gonna use AWS Polly to generate a voice dataset and use this dataset to train a model on Edge Impulse to identify two voices, “on” and “off”, and deploy the model to a Syntiant TinyML board.</p>
+<span id="more"></span>
+
+<h1 id="Ideas"><a href="#Ideas" class="headerlink" title="Ideas"></a>Ideas</h1><p><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/polly/latest/dg/what-is.html">Amazon Polly</a> is a cloud service that converts text into spoken audio. Its Text-to-Speech (TTS) service uses deep learning to synthesize natural sounding human speech.</p>
+<p>Polly supports many languages, according to <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/polly/latest/dg/voicelist.html">this list</a>. I use several English voices and their variants to generate a base voice dataset. Then I use FFmpeg to create more audio data by changing its speed and pitch.</p>
+<p>To be more specific, I’ll use Polly to synthesize voices of two words, “on” and “off,” with 13 English voices. For each voice, I’ll create new voices by changing its speed from 85% to 115% with 2% intervals. For each speed, I’ll also change its pitch from 85% to 115% with 2% intervals. That’ll give us 13 * 15 * 15 &#x3D; 2925 samples for each word.</p>
+<p>I also need an open set to identify words that are not “on” or “off”. To do so, I use Polly to synthesize common words and change their speed and pitch with bigger intervals so that the open set won’t relatively too large than the original dataset.</p>
+<h1 id="Generate-dataset"><a href="#Generate-dataset" class="headerlink" title="Generate dataset"></a>Generate dataset</h1><h3 id="Create-one-synthesize-voice-from-Polly"><a href="#Create-one-synthesize-voice-from-Polly" class="headerlink" title="Create one synthesize voice from Polly"></a>Create one synthesize voice from Polly</h3><p>There are several Polly SDKs and several Python and Java sample codes. I refer to the <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/polly/latest/dg/SynthesizeSpeechSamplePython.html">SynthesizeSpeech sample code</a> to create audio.</p>
+<h3 id="Change-audio-speed-and-pitch-by-FFmpeg"><a href="#Change-audio-speed-and-pitch-by-FFmpeg" class="headerlink" title="Change audio speed and pitch by FFmpeg"></a>Change audio speed and pitch by FFmpeg</h3><p>The following command can slow down audio at 85% speed.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input_audio.wav -filter:a atempo=0.85 -vn output_audio.wav</span><br></pre></td></tr></table></figure>
+
+<p>The following command can increase the pitch of audio by 115%.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input_audio.wav -af asetrate=16000*1.15,aresample=16000 output_audio.wav</span><br></pre></td></tr></table></figure>
+
+<p>To make each audio sample the same length for Edge Impulse to create features, I add silence to the beginning and the end.</p>
+<p>The following command adds 0.1s silence to the beginning of the audio.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input_audio.wav -af areverse,apad=pad_dur=0.1s,areverse output_audio.wav</span><br></pre></td></tr></table></figure>
+
+<p>The following command adds 0.2s silence to the end of the audio.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input_audio.wav -af apad=pad_dur=0.2s output_audio.wav</span><br></pre></td></tr></table></figure>
+
+<h3 id="Audio-filename"><a href="#Audio-filename" class="headerlink" title="Audio filename"></a>Audio filename</h3><p>Edge Impulse supports several ways to import an existing dataset. Parsing the filename is one of the solutions. The characters before the first dot will be the label of an audio file. So the filename is like the follows.</p>
+<ul>
+<li>“<code>on.extra_description.wav</code>“: Label <code>on</code></li>
+<li>“<code>off.extra_description.wav</code>“: Label <code>off</code></li>
+<li>“<code>z_openset.extra_description.wav</code>“: Lable <code>z_openset</code></li>
+</ul>
+<h3 id="Use-sample-code-to-generate-the-aduio-dataset"><a href="#Use-sample-code-to-generate-the-aduio-dataset" class="headerlink" title="Use sample code to generate the aduio dataset"></a>Use sample code to generate the aduio dataset</h3><p>With the above sample code and sample commands, I put the code in the git repository <a target="_blank" rel="noopener" href="https://github.com/williamlai/generate-audio-dataset">“generate-audio-dataset”</a>.</p>
+<p>Use the following command to generate an audio dataset of “on”, “off”, and “z_openset” in the default folder output.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python generate_audio_dataset.py \</span><br><span class="line">    -w <span class="string">&#x27;on&#x27;</span> <span class="string">&#x27;off&#x27;</span> \</span><br><span class="line">    -v <span class="string">&#x27;Amy&#x27;</span> <span class="string">&#x27;Emma&#x27;</span> <span class="string">&#x27;Brian&#x27;</span> <span class="string">&#x27;Ivy&#x27;</span> <span class="string">&#x27;Joanna&#x27;</span> <span class="string">&#x27;Kendra&#x27;</span> <span class="string">&#x27;Kimberly&#x27;</span> <span class="string">&#x27;Salli&#x27;</span> <span class="string">&#x27;Joey&#x27;</span> <span class="string">&#x27;Justin&#x27;</span> <span class="string">&#x27;Matthew&#x27;</span> <span class="string">&#x27;Nicole&#x27;</span> <span class="string">&#x27;Russell&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Test-on-Syntiant-TinyML"><a href="#Test-on-Syntiant-TinyML" class="headerlink" title="Test on Syntiant TinyML"></a>Test on Syntiant TinyML</h1><p>Now we have an audio dataset that contains 10K+ files.</p>
+<p>Create a project named “<code>on-off-switch</code>“.</p>
+
+
+<p>Go to “Data acquisition”, and “Upload data”, then upload all files.</p>
+
+
+<p>Create impulse design with the following settings.</p>
+
+
+<p>In the Syntiant processing block, keep the default settings and “Save parameters”.</p>
+
+
+<p>In the classifier learning block, change the number of training cycles to 10, add low noise in the data augmentation, then start training.</p>
+
+
+<p>As training is complete, go to “Deployment”, select “Build firmware”, choose Syntiant TinyML, set up “Find posterior parameters,” and select “on” and “off” labels.</p>
+
+
+<p>Then select “Build”.</p>
+
+
+<p>When the build is complete, there will be an archived file with a script for uploading firmware to NDP101 and SAMD21. Run the script with TinyML connected to the computer.</p>
+<p>Then we can check the log from UART.</p>
+
+
+<p>Now we can test it by saying “on” or “off” we’ll see the following logs.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Predictions:</span><br><span class="line"></span><br><span class="line">    off:        0</span><br><span class="line"></span><br><span class="line">    on:         1</span><br><span class="line"></span><br><span class="line">    z_openset:  0</span><br><span class="line"></span><br><span class="line">Battery = 99%</span><br><span class="line"></span><br><span class="line">Predictions:</span><br><span class="line"></span><br><span class="line">    off:        1</span><br><span class="line"></span><br><span class="line">    on:         0</span><br><span class="line"></span><br><span class="line">    z_openset:  0</span><br><span class="line"></span><br><span class="line">Battery = 99%</span><br></pre></td></tr></table></figure>
+
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>There are several human speech generator available including AWS Polly, which means it’ll do if I use other generator. But AWS provide a well-maintained SDK and make things easier, so I use it in this project.</p>
+<p>Use synthesized audio to train an audio model looks like a idea of GAN, so I did some search about it, but the goal is slightly different. The goal of GAN is to make audio sounds like human voice, but in this article we just want to do the classifier work. Although I sure use some ideas of GAN would help too, and I hope there will be some tools like this so that SDE or AI engineer can generate a desired dataset in a short time.</p>
+<h3 id="05-30-2023-updated"><a href="#05-30-2023-updated" class="headerlink" title="05&#x2F;30&#x2F;2023 updated"></a>05&#x2F;30&#x2F;2023 updated</h3><p>This article was completed by the end of 2022, but it is only being published today. One reason for the delay is uncertainty about whether the idea is complete, and another reason is being too busy.</p>
+<p>I’m glad that I finally decided to publish it. I hope that in the future, I will continue self-learning.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/Syntiant/" rel="tag"># Syntiant</a>
+              <a href="/tags/NDP101/" rel="tag"># NDP101</a>
+              <a href="/tags/AWS/" rel="tag"># AWS</a>
+              <a href="/tags/Polly/" rel="tag"># Polly</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/" rel="prev" title="Syntiant TinyML Remote Ctrl RC Train">
+                  <i class="fa fa-angle-left"></i> Syntiant TinyML Remote Ctrl RC Train
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/12/21/20221221-poem/" rel="next" title="綿羊">
+                  綿羊 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">William Lai</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="In this article, I’m going to set up and run an simple Wasm application on ESP32.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Run WASM application on ESP32">
+<meta property="og:url" content="http://example.com/2022/11/17/run-wasm-app-on-esp32/index.html">
+<meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
+<meta property="og:description" content="In this article, I’m going to set up and run an simple Wasm application on ESP32.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-11-17T06:29:22.000Z">
+<meta property="article:modified_time" content="2025-03-25T12:52:36.361Z">
+<meta property="article:author" content="William Lai">
+<meta property="article:tag" content="wasm">
+<meta property="article:tag" content="esp32">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/11/17/run-wasm-app-on-esp32/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/11/17/run-wasm-app-on-esp32/","path":"2022/11/17/run-wasm-app-on-esp32/","title":"Run WASM application on ESP32"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Run WASM application on ESP32 | 平凡事物 / Oridinary Life</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">平凡事物 / Oridinary Life</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-日記"><a href="/categories/diary/" rel="section"><i class="fa fa-th fa-fw"></i>日記</a></li><li class="menu-item menu-item-閱讀"><a href="/categories/reading/" rel="section"><i class="fa fa-th fa-fw"></i>閱讀</a></li><li class="menu-item menu-item-詩"><a href="/categories/poem/" rel="section"><i class="fa fa-th fa-fw"></i>詩</a></li><li class="menu-item menu-item-tech"><a href="/categories/tech/" rel="section"><i class="fa fa-th fa-fw"></i>tech</a></li><li class="menu-item menu-item-leetcode"><a href="/categories/leetcode/" rel="section"><i class="fa fa-th fa-fw"></i>leetcode</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-WebAssembly"><span class="nav-number">1.</span> <span class="nav-text">What is WebAssembly</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WebAssembly-Micro-Runtime"><span class="nav-number">2.</span> <span class="nav-text">WebAssembly Micro Runtime</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Official-Example-ESP32"><span class="nav-number">3.</span> <span class="nav-text">Official Example: ESP32</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Create-our-own-WASM-application-on-ESP32"><span class="nav-number">4.</span> <span class="nav-text">Create our own WASM application on ESP32</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Build-a-WASM-application"><span class="nav-number">4.1.</span> <span class="nav-text">Build a WASM application</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Download-wasi-SDK"><span class="nav-number">4.1.1.</span> <span class="nav-text">Download wasi SDK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-ESP32-project"><span class="nav-number">4.1.2.</span> <span class="nav-text">Create ESP32 project</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Build-WASM-application"><span class="nav-number">4.1.3.</span> <span class="nav-text">Build WASM application</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Write-ESP32-code-to-launch-iwasm"><span class="nav-number">4.2.</span> <span class="nav-text">Write ESP32 code to launch iwasm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#code-study"><span class="nav-number">4.2.1.</span> <span class="nav-text">code study</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conclusion"><span class="nav-number">5.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">William Lai</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/17/run-wasm-app-on-esp32/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="William Lai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Run WASM application on ESP32 | 平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Run WASM application on ESP32
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-11-17 14:29:22" itemprop="dateCreated datePublished" datetime="2022-11-17T14:29:22+08:00">2022-11-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-03-25 20:52:36" itemprop="dateModified" datetime="2025-03-25T20:52:36+08:00">2025-03-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/tech/" itemprop="url" rel="index"><span itemprop="name">tech</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>In this article, I’m going to set up and run an simple Wasm application on ESP32.</p>
+<span id="more"></span>
+
+<h1 id="What-is-WebAssembly"><a href="#What-is-WebAssembly" class="headerlink" title="What is WebAssembly"></a>What is WebAssembly</h1><p>WebAssembly (abbreviated WASM) is a binary instruction format for a stack-based virtual machine. It’s known for running applications on the web. The WASM runtime can load and run an application, unload the application, and wait for the next application. It creates a virtual environment and provides flexibility and security.</p>
+<p>However, it can also run on embedded devices with FreeRTOS kernel. It makes this kind of embedded device able to run different types of applications by replacing the WASM application binary. Before, changing the application at runtime was hard because there is no dynamic linking on devices that run RTOS. It then requires some propriety ways to do so. OTA update is one example. But OTA usually requires a reboot to make it effective.</p>
+<h1 id="WebAssembly-Micro-Runtime"><a href="#WebAssembly-Micro-Runtime" class="headerlink" title="WebAssembly Micro Runtime"></a>WebAssembly Micro Runtime</h1><p>There are different types of WASM runtime. <a target="_blank" rel="noopener" href="https://github.com/bytecodealliance/wasm-micro-runtime">WebAssembly Micro Runtime (WAMR)</a> is a lightweight standalone WASM runtime. It supports many platforms, including ESP-IDF.</p>
+<p>The VM core of WAMR is called iwasm. The main task of iwasm is to run a WASM application.</p>
+<p>There are two significant tasks to take care of to run a simple WASM application on an embedded device.</p>
+<ul>
+<li>iwasm: Launch WASM runtime so that it can load a WASM application.</li>
+<li>WASM application: It needs to convert an application into WASM binary.</li>
+</ul>
+<h1 id="Official-Example-ESP32"><a href="#Official-Example-ESP32" class="headerlink" title="Official Example: ESP32"></a>Official Example: ESP32</h1><p>ESP32 is one of the official examples. Before running any example, it needs to set up the <a target="_blank" rel="noopener" href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/#get-started-get-prerequisites">ESP32 building environment</a>.</p>
+<p>The example is here at <a target="_blank" rel="noopener" href="https://github.com/bytecodealliance/wasm-micro-runtime/tree/main/product-mini/platforms/esp-idf">https://github.com/bytecodealliance/wasm-micro-runtime/tree/main/product-mini/platforms/esp-idf</a>. To run the example, we first download the repository.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/bytecodealliance/wasm-micro-runtime.git</span><br></pre></td></tr></table></figure>
+
+<p>Go to the example folder, build and run it.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> wasm-micro-runtime/product-mini/platforms/esp-idf</span><br><span class="line">./build_and_run.sh</span><br></pre></td></tr></table></figure>
+
+<p>In the <code>build_and_run.sh</code> script, we can see it sets an environment variable <code>WAMR_PATH</code>.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [[ -z <span class="string">&quot;<span class="variable">$&#123;WAMR_PATH&#125;</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">export</span> WAMR_PATH=<span class="variable">$PWD</span>/../../..</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>The <code>WAMR_PATH</code> points to the repository root that we just cloned. So we can set it in <code>.bashrc</code> so that we can still use it in other WASM projects.</p>
+<p>We can check the log with the following command.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">idf.py monitor</span><br></pre></td></tr></table></figure>
+
+<p>We can see the following logs from the sample WASM application. The binary is built in a C-array format in <a target="_blank" rel="noopener" href="https://github.com/bytecodealliance/wasm-micro-runtime/blob/main/product-mini/platforms/esp-idf/main/test_wasm.h">https://github.com/bytecodealliance/wasm-micro-runtime/blob/main/product-mini/platforms/esp-idf/main/test_wasm.h</a>. We can see it’s not a big application.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Hello world!</span><br><span class="line">buf ptr: 0x1458</span><br><span class="line">buf: 1234</span><br></pre></td></tr></table></figure>
+
+<h1 id="Create-our-own-WASM-application-on-ESP32"><a href="#Create-our-own-WASM-application-on-ESP32" class="headerlink" title="Create our own WASM application on ESP32"></a>Create our own WASM application on ESP32</h1><p>Now we can create a WASM application on ESP32 from scratch. Before starting, we need to check the following prerequisites.</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/#get-started-get-prerequisites">ESP32 building environment</a>: Ensure the related environment variables for ESP32 has been set.</li>
+<li>Setup WAMR_PATH: Set environment variable <code>WAMR_PATH</code> to the folder of wasm-micro-runtime.</li>
+</ul>
+<h2 id="Build-a-WASM-application"><a href="#Build-a-WASM-application" class="headerlink" title="Build a WASM application"></a>Build a WASM application</h2><p>The following section is a brief version of the doc <a target="_blank" rel="noopener" href="https://github.com/bytecodealliance/wasm-micro-runtime/blob/main/doc/build_wasm_app.md">Build WASM applications</a>.</p>
+<h3 id="Download-wasi-SDK"><a href="#Download-wasi-SDK" class="headerlink" title="Download wasi SDK"></a>Download wasi SDK</h3><p>The wasi SDK is for building C applications into WASM applications. Download wasi SDK in <a target="_blank" rel="noopener" href="https://github.com/WebAssembly/wasi-sdk/releases">wasi-sdk release</a>. Extract it into the default location.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sdk-16.0-linux.tar.gz</span><br><span class="line">tar -zxf wasi-sdk-16.0-linux.tar.gz</span><br><span class="line">sudo mv wasi-sdk-16.0-linux /opt/wasi-sdk</span><br></pre></td></tr></table></figure>
+
+<h3 id="Create-ESP32-project"><a href="#Create-ESP32-project" class="headerlink" title="Create ESP32 project"></a>Create ESP32 project</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">idf.py create-project esp32-wasm-test</span><br></pre></td></tr></table></figure>
+
+<p>It’ll create the following folders and files.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ tree esp32-wasm-test/</span><br><span class="line">esp32-wasm-test/</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">└── main</span><br><span class="line">    ├── CMakeLists.txt</span><br><span class="line">    └── esp32-wasm-test.c</span><br></pre></td></tr></table></figure>
+
+<p>Modify <code>esp32-wasm-test/CMakeLists.txt</code> as follows.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.5)</span><br><span class="line"></span><br><span class="line">include($ENV&#123;IDF_PATH&#125;/tools/cmake/project.cmake)</span><br><span class="line"></span><br><span class="line">set (COMPONENTS $&#123;IDF_TARGET&#125; main freertos wamr)</span><br><span class="line">list(APPEND EXTRA_COMPONENT_DIRS &quot;$ENV&#123;WAMR_PATH&#125;/build-scripts/esp-idf&quot;)</span><br><span class="line"></span><br><span class="line">project(esp32-wasm-test)</span><br></pre></td></tr></table></figure>
+
+<p>We specify the needed components are <code>main</code>, <code>freertos</code>, and <code>wamr</code>.</p>
+<p>In the folder <code>$&#123;WAMR_PATH&#125;/build-scripts/esp-idf</code>, there is a ready-to-use <code>wamr</code> ESP32 component. We add this folder to the extra component directories.</p>
+<p>Then we modify <code>esp32-wasm-test/main/CMakeLists.txt</code> as follows.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">idf_component_register(SRCS &quot;esp32-wasm-test.c&quot;</span><br><span class="line">                    INCLUDE_DIRS &quot;.&quot;</span><br><span class="line">                    REQUIRES wamr)</span><br></pre></td></tr></table></figure>
+
+<p>The change we made is adding <code>wamr</code> into the dependent component.</p>
+<h3 id="Build-WASM-application"><a href="#Build-WASM-application" class="headerlink" title="Build WASM application"></a>Build WASM application</h3><p>We use the following C sample code as an example and save it as <code>test.c</code>. It’s actually the same sample code in the official example.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> &#123;</span><br><span class="line">    <span class="type">char</span> *buf;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Hello world!\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    buf = <span class="built_in">malloc</span>(<span class="number">1024</span>);</span><br><span class="line">    <span class="keyword">if</span> (!buf) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;malloc buf failed\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;buf ptr: %p\n&quot;</span>, buf);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">sprintf</span>(buf, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;1234\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;buf: %s&quot;</span>, buf);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">free</span>(buf);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Then we compile it into WASM binary with the following command.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/wasi-sdk/bin/clang -O3 -o test.wasm test.c</span><br></pre></td></tr></table></figure>
+
+<p>However, the built WASM binary <code>test.wasm</code> is too big because it brings too many dependencies.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ls -l</span><br><span class="line">total 36</span><br><span class="line">-rw-rw-r-- 1 william william   355 Nov 17 11:40 test.c</span><br><span class="line">-rwxrwxr-x 1 william william 28822 Nov 17 16:45 test.wasm</span><br></pre></td></tr></table></figure>
+
+<p>We can reduce the footprint with the following command.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/opt/wasi-sdk/bin/clang -O3 -nostdlib \</span><br><span class="line">    -z stack-size=8192 -Wl,--initial-memory=65536 \</span><br><span class="line">    -o test.wasm test.c \</span><br><span class="line">    -Wl,--export=main -Wl,--export=__main_argc_argv \</span><br><span class="line">    -Wl,--export=__heap_base -Wl,--export=__data_end \</span><br><span class="line">    -Wl,--no-entry -Wl,--strip-all -Wl,--allow-undefined</span><br></pre></td></tr></table></figure>
+
+<p>The <code>--no-entry</code> tells the compiler that it does not follow traditional entry point has its own entry function. In WASM, the default expected entry point is <code>main</code> instead of <code>_start</code> in Linux.</p>
+<p>The <code>--strip-all</code> strips all symbols which is not needed for running a WASM application. The symbols are helpful when debugging.</p>
+<p>The exported symbols are somewhat necessary because there is no entry point, so we have to pick up some symbols so that the linker can at least know which functions are needed.</p>
+<p>Now the binary size is similar to the official example.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ls -l</span><br><span class="line">total 8</span><br><span class="line">-rw-rw-r-- 1 william william 355 Nov 17 11:40 test.c</span><br><span class="line">-rwxrwxr-x 1 william william 415 Nov 17 16:47 test.wasm</span><br></pre></td></tr></table></figure>
+
+<p>Then we can use <code>xxd</code> to convert the binary into C-array format.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxd -i test.wasm esp32-wasm-test/main/test_wasm.h</span><br></pre></td></tr></table></figure>
+
+<p>We suppost to ensure to align this array with <code>__aligned(4)</code>, but ESP32 by default already aligns it, so we can ignore it.</p>
+<h2 id="Write-ESP32-code-to-launch-iwasm"><a href="#Write-ESP32-code-to-launch-iwasm" class="headerlink" title="Write ESP32 code to launch iwasm"></a>Write ESP32 code to launch iwasm</h2><p>I simplify the example code <code>esp32-wasm-test/main/esp32-wasm-test.c</code> as follows. It only loads one WASM application in interpreter mode.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;wasm_export.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;bh_platform.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;test_wasm.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;esp_log.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_TAG <span class="string">&quot;wamr&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">app_instance_main</span><span class="params">(<span class="type">wasm_module_inst_t</span> module_inst)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> res = <span class="number">0</span>;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *exception;</span><br><span class="line"></span><br><span class="line">    wasm_application_execute_main(module_inst, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> ((exception = wasm_runtime_get_exception(module_inst))) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, exception);</span><br><span class="line">        res = <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> *<span class="title function_">iwasm_main</span><span class="params">(<span class="type">void</span> *arg)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">wasm_module_t</span> wasm_module = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="type">wasm_module_inst_t</span> wasm_module_inst = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="type">char</span> error_buf[<span class="number">128</span>];</span><br><span class="line">    RuntimeInitArgs init_args;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">memset</span>(&amp;init_args, <span class="number">0</span>, <span class="keyword">sizeof</span>(RuntimeInitArgs));</span><br><span class="line">    init_args.mem_alloc_type = Alloc_With_Allocator;</span><br><span class="line">    init_args.mem_alloc_option.allocator.malloc_func = (<span class="type">void</span> *)os_malloc;</span><br><span class="line">    init_args.mem_alloc_option.allocator.realloc_func = (<span class="type">void</span> *)os_realloc;</span><br><span class="line">    init_args.mem_alloc_option.allocator.free_func = (<span class="type">void</span> *)os_free;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (wasm_runtime_full_init(&amp;init_args) == <span class="literal">false</span>) &#123;</span><br><span class="line">        ESP_LOGE(LOG_TAG, <span class="string">&quot;Init runtime failed.&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((wasm_module = wasm_runtime_load(test_wasm, <span class="keyword">sizeof</span>(test_wasm), error_buf, <span class="keyword">sizeof</span>(error_buf))) == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        ESP_LOGE(LOG_TAG, <span class="string">&quot;Error in wasm_runtime_load: %s&quot;</span>, error_buf);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((wasm_module_inst = wasm_runtime_instantiate(wasm_module, <span class="number">32</span> * <span class="number">1024</span>, <span class="number">32</span> * <span class="number">1024</span>, error_buf, <span class="keyword">sizeof</span>(error_buf))) == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        ESP_LOGE(LOG_TAG, <span class="string">&quot;Error while instantiating: %s&quot;</span>, error_buf);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((app_instance_main(wasm_module_inst)) != <span class="number">0</span>) &#123;</span><br><span class="line">        ESP_LOGE(LOG_TAG, <span class="string">&quot;Error while app_instance_main&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (wasm_module_inst != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        wasm_runtime_deinstantiate(wasm_module_inst);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (wasm_module != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        wasm_runtime_unload(wasm_module);</span><br><span class="line">    &#125;</span><br><span class="line">    wasm_runtime_destroy();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">app_main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="type">pthread_t</span> t;</span><br><span class="line">    <span class="type">int</span> res;</span><br><span class="line"></span><br><span class="line">    <span class="type">pthread_attr_t</span> tattr;</span><br><span class="line">    pthread_attr_init(&amp;tattr);</span><br><span class="line">    pthread_attr_setdetachstate(&amp;tattr, PTHREAD_CREATE_JOINABLE);</span><br><span class="line">    pthread_attr_setstacksize(&amp;tattr, <span class="number">4096</span>);</span><br><span class="line"></span><br><span class="line">    res = pthread_create(&amp;t, &amp;tattr, iwasm_main, (<span class="type">void</span> *)<span class="literal">NULL</span>);</span><br><span class="line">    assert(res == <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    res = pthread_join(t, <span class="literal">NULL</span>);</span><br><span class="line">    assert(res == <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    ESP_LOGI(LOG_TAG, <span class="string">&quot;Exiting...&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Use the following command to build, flash , and check the logs.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd esp32-wasm-test</span><br><span class="line">idf.py build</span><br><span class="line">idf.py flash monitor</span><br></pre></td></tr></table></figure>
+
+<h3 id="code-study"><a href="#code-study" class="headerlink" title="code study"></a>code study</h3><p>We can see the memory that iwasm uses is from the allocator. We can provide our allocator instead of a system allocator if we want.</p>
+<p>The following are the needed API calls.</p>
+<ul>
+<li><code>wasm_runtime_full_init</code> &amp; <code>wasm_runtime_destroy</code>: These are two APIs that init the iwasm.</li>
+<li><code>wasm_runtime_load</code> &amp; <code>wasm_runtime_unload</code>: Loading and unloading the WASM application into a model.</li>
+<li><code>wasm_runtime_instantiate</code> &amp; <code>wasm_runtime_deinstantiate</code>: It creates and destroys instances from a model.</li>
+<li><code>wasm_application_execute_main</code> &amp; <code>wasm_runtime_get_exception</code>: It runs the instance and gets the results.</li>
+</ul>
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>Before studying any WASM, I thought WASM was not a practical solution because the byte codes of a WASM application may need to be bigger. After all, it has to bind many features to make it work within the WASM engine. But I was wrong. The byte code size of the example is similar to the size in the native environment. It even includes printf and malloc, and the two functions usually cost lots of code space. And WASM gets a good balance by taking advantage of the native environment support.</p>
+<p>So I think WASM is pretty cool and makes MCU have a flexible running environment.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/wasm/" rel="tag"># wasm</a>
+              <a href="/tags/esp32/" rel="tag"># esp32</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/14/rust-c-coexist/" rel="prev" title="Rust and C coexist">
+                  <i class="fa fa-angle-left"></i> Rust and C coexist
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/21/run-rust-in-wasm/" rel="next" title="Run Rust in WASM">
+                  Run Rust in WASM <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">William Lai</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

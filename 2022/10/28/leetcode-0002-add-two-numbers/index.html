@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="IdeaIt’s a trivial problem. Two inputs are linked lists, and the output is a linked list. I’ll just create a linked list as an output whose memory comes from the heap. For each digit, the value is the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Leetcode 0002 Add Two Numbers">
+<meta property="og:url" content="http://example.com/2022/10/28/leetcode-0002-add-two-numbers/index.html">
+<meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
+<meta property="og:description" content="IdeaIt’s a trivial problem. Two inputs are linked lists, and the output is a linked list. I’ll just create a linked list as an output whose memory comes from the heap. For each digit, the value is the">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-10-28T08:49:25.000Z">
+<meta property="article:modified_time" content="2025-03-25T12:52:36.351Z">
+<meta property="article:author" content="William Lai">
+<meta property="article:tag" content="Leetcode">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="CPP">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/10/28/leetcode-0002-add-two-numbers/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/10/28/leetcode-0002-add-two-numbers/","path":"2022/10/28/leetcode-0002-add-two-numbers/","title":"Leetcode 0002 Add Two Numbers"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Leetcode 0002 Add Two Numbers | 平凡事物 / Oridinary Life</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">平凡事物 / Oridinary Life</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-日記"><a href="/categories/diary/" rel="section"><i class="fa fa-th fa-fw"></i>日記</a></li><li class="menu-item menu-item-閱讀"><a href="/categories/reading/" rel="section"><i class="fa fa-th fa-fw"></i>閱讀</a></li><li class="menu-item menu-item-詩"><a href="/categories/poem/" rel="section"><i class="fa fa-th fa-fw"></i>詩</a></li><li class="menu-item menu-item-tech"><a href="/categories/tech/" rel="section"><i class="fa fa-th fa-fw"></i>tech</a></li><li class="menu-item menu-item-leetcode"><a href="/categories/leetcode/" rel="section"><i class="fa fa-th fa-fw"></i>leetcode</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Idea"><span class="nav-number">1.</span> <span class="nav-text">Idea</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Solution"><span class="nav-number">2.</span> <span class="nav-text">Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Rust"><span class="nav-number">2.1.</span> <span class="nav-text">Rust</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPP"><span class="nav-number">2.2.</span> <span class="nav-text">CPP</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">William Lai</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/28/leetcode-0002-add-two-numbers/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="William Lai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Leetcode 0002 Add Two Numbers | 平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Leetcode 0002 Add Two Numbers
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-10-28 16:49:25" itemprop="dateCreated datePublished" datetime="2022-10-28T16:49:25+08:00">2022-10-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-03-25 20:52:36" itemprop="dateModified" datetime="2025-03-25T20:52:36+08:00">2025-03-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="Idea"><a href="#Idea" class="headerlink" title="Idea"></a>Idea</h1><p>It’s a trivial problem. Two inputs are linked lists, and the output is a linked list. I’ll just create a linked list as an output whose memory comes from the heap. For each digit, the value is the summation of the digit in list1, the digit in list2, and the carry. If the sum is larger or equal to 10, then modularize it to 10 and mark carry as 1. After summation for 1 digit, step to the next digit and take care of NULL pointers.</p>
+<span id="more"></span>
+
+<h1 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h1><h2 id="Rust"><a href="#Rust" class="headerlink" title="Rust"></a>Rust</h2><p>Here is the Rust solution.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">impl Solution &#123;</span><br><span class="line">    pub fn add_two_numbers(l1: Option&lt;Box&lt;ListNode&gt;&gt;, l2: Option&lt;Box&lt;ListNode&gt;&gt;) -&gt; Option&lt;Box&lt;ListNode&gt;&gt; &#123;</span><br><span class="line">        let mut dummy_head = ListNode::new(0);</span><br><span class="line">        let mut current = &amp;mut dummy_head;</span><br><span class="line">        let mut idx1 = l1;</span><br><span class="line">        let mut idx2 = l2;</span><br><span class="line">        </span><br><span class="line">        let mut carry: i32 = 0;</span><br><span class="line">        </span><br><span class="line">        while idx1 != None || idx2 != None &#123;</span><br><span class="line">            let sum = match (&amp;idx1, &amp;idx2) &#123;</span><br><span class="line">                (Some(node1), Some(node2)) =&gt; node1.val + node2.val + carry,</span><br><span class="line">                (Some(node1), None) =&gt; node1.val + carry,</span><br><span class="line">                (None, Some(node2)) =&gt; node2.val + carry,</span><br><span class="line">                (None, None) =&gt; carry,</span><br><span class="line">            &#125;;</span><br><span class="line">            </span><br><span class="line">            carry = sum / 10;</span><br><span class="line">            </span><br><span class="line">            current.next = Some(Box::new(ListNode::new(sum % 10)));</span><br><span class="line">            current = current.next.as_mut().unwrap();</span><br><span class="line">            </span><br><span class="line">            idx1 = if idx1 != None &#123; idx1.unwrap().next &#125; else &#123; idx1 &#125;;</span><br><span class="line">            idx2 = if idx2 != None &#123; idx2.unwrap().next &#125; else &#123; idx2 &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        if carry &gt; 0 &#123;</span><br><span class="line">            current.next = Some(Box::new(ListNode::new(carry)));</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        dummy_head.next</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>When dealing with pointers, it’s usually designed as an <code>Option</code> enumeration. <code>Some</code> denotes there is a value, and <code>None</code> denotes a NULL pointer. It’s a good design because we can only extract value when it’s <code>Some</code>. We can see how it works when we do the summation in the match expression.</p>
+<p>Since the output size is unknown, so the output is created from Box. It means that it uses memory in a heap.</p>
+<h2 id="CPP"><a href="#CPP" class="headerlink" title="CPP"></a>CPP</h2><p>Here is the CPP solution.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line">public:</span><br><span class="line">    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) &#123;</span><br><span class="line">        ListNode *pDummyHead = new ListNode(0);</span><br><span class="line">        ListNode *pCurrent = pDummyHead;</span><br><span class="line">        ListNode *pIdx1 = l1;</span><br><span class="line">        ListNode *pIdx2 = l2;</span><br><span class="line">        </span><br><span class="line">        int carry = 0;</span><br><span class="line">        </span><br><span class="line">        while (pIdx1 != NULL || pIdx2 != NULL) &#123;</span><br><span class="line">            int sum = carry;</span><br><span class="line">            if (pIdx1 != NULL) &#123;</span><br><span class="line">                sum += pIdx1-&gt;val;</span><br><span class="line">            &#125;</span><br><span class="line">            if (pIdx2 != NULL) &#123;</span><br><span class="line">                sum += pIdx2-&gt;val;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            pCurrent-&gt;next = new ListNode(sum % 10);</span><br><span class="line">            pCurrent = pCurrent-&gt;next;</span><br><span class="line">            carry = sum / 10;</span><br><span class="line">            </span><br><span class="line">            if (pIdx1 != NULL) &#123;</span><br><span class="line">                pIdx1 = pIdx1-&gt;next;</span><br><span class="line">            &#125;</span><br><span class="line">            if (pIdx2 != NULL) &#123;</span><br><span class="line">                pIdx2 = pIdx2-&gt;next;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (carry &gt; 0) &#123;</span><br><span class="line">            pCurrent-&gt;next = new ListNode(carry);</span><br><span class="line">        &#125;</span><br><span class="line">        return pDummyHead-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Leetcode/" rel="tag"># Leetcode</a>
+              <a href="/tags/Rust/" rel="tag"># Rust</a>
+              <a href="/tags/CPP/" rel="tag"># CPP</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/10/24/leetcode-0001-two-sum/" rel="prev" title="Leetcode 0001 Two Sum">
+                  <i class="fa fa-angle-left"></i> Leetcode 0001 Two Sum
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/01/syntiant-tinyml-robot-car/" rel="next" title="Syntiant TinyML Robot Car">
+                  Syntiant TinyML Robot Car <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">William Lai</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

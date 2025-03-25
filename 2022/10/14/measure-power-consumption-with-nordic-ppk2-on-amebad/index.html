@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="I bought a Nordic Power Profiler kit II for measuring power consumption for MCUs.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Measure Power Consumption With Nordic PPK2 on AmebaD">
+<meta property="og:url" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/index.html">
+<meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
+<meta property="og:description" content="I bought a Nordic Power Profiler kit II for measuring power consumption for MCUs.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-10-14T02:32:46.000Z">
+<meta property="article:modified_time" content="2025-03-25T12:52:36.354Z">
+<meta property="article:author" content="William Lai">
+<meta property="article:tag" content="Nordic">
+<meta property="article:tag" content="PPK2">
+<meta property="article:tag" content="Aemba">
+<meta property="article:tag" content="AmebaD">
+<meta property="article:tag" content="MCU">
+<meta property="article:tag" content="Power Consumption">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/","path":"2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/","title":"Measure Power Consumption With Nordic PPK2 on AmebaD"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Measure Power Consumption With Nordic PPK2 on AmebaD | 平凡事物 / Oridinary Life</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">平凡事物 / Oridinary Life</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-日記"><a href="/categories/diary/" rel="section"><i class="fa fa-th fa-fw"></i>日記</a></li><li class="menu-item menu-item-閱讀"><a href="/categories/reading/" rel="section"><i class="fa fa-th fa-fw"></i>閱讀</a></li><li class="menu-item menu-item-詩"><a href="/categories/poem/" rel="section"><i class="fa fa-th fa-fw"></i>詩</a></li><li class="menu-item menu-item-tech"><a href="/categories/tech/" rel="section"><i class="fa fa-th fa-fw"></i>tech</a></li><li class="menu-item menu-item-leetcode"><a href="/categories/leetcode/" rel="section"><i class="fa fa-th fa-fw"></i>leetcode</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Why-I-bought-Nordic-PPK2"><span class="nav-number">1.</span> <span class="nav-text">Why I bought Nordic PPK2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#How-to-use-it"><span class="nav-number">2.</span> <span class="nav-text">How to use it</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Install-nRF-Connect-for-Desktop"><span class="nav-number">2.1.</span> <span class="nav-text">Install nRF Connect for Desktop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Set-up-PPK2-configuration"><span class="nav-number">2.2.</span> <span class="nav-text">Set up PPK2 configuration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Connect-boards"><span class="nav-number">2.3.</span> <span class="nav-text">Connect boards</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Start-measuring"><span class="nav-number">2.4.</span> <span class="nav-text">Start measuring</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WiFi-LPS"><span class="nav-number">2.4.1.</span> <span class="nav-text">WiFi LPS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deep-Sleep"><span class="nav-number">2.4.2.</span> <span class="nav-text">Deep Sleep</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WiFi-TX"><span class="nav-number">2.4.3.</span> <span class="nav-text">WiFi TX</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conclusion"><span class="nav-number">3.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">William Lai</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="William Lai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Measure Power Consumption With Nordic PPK2 on AmebaD | 平凡事物 / Oridinary Life">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Measure Power Consumption With Nordic PPK2 on AmebaD
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-10-14 10:32:46" itemprop="dateCreated datePublished" datetime="2022-10-14T10:32:46+08:00">2022-10-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-03-25 20:52:36" itemprop="dateModified" datetime="2025-03-25T20:52:36+08:00">2025-03-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/tech/" itemprop="url" rel="index"><span itemprop="name">tech</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>I bought a Nordic Power Profiler kit II for measuring power consumption for MCUs.</p>
+<span id="more"></span>
+
+<h1 id="Why-I-bought-Nordic-PPK2"><a href="#Why-I-bought-Nordic-PPK2" class="headerlink" title="Why I bought Nordic PPK2"></a>Why I bought Nordic PPK2</h1><p>I’ve used Keysight 34465A and Keithley DMM6500 digital multimeter to measure MCU’s power consumption. Those devices have ampere precision to uA and a sample rate of around 1K (one millisecond per sample).</p>
+<p>The ampere precision is essential for MUCs with a deep sleep mode that costs less than 100uW. And the sample rate is important to integrate a period of power consumption, especially for MCUs with wireless capability.</p>
+<p>These multimeters can do the job. But they are too expensive for individual makers or developers and too heavy to carry around.</p>
+<p>So, one day, when I was browsing Nordic products, I found the <a target="_blank" rel="noopener" href="https://www.nordicsemi.com/Products/Development-hardware/Power-Profiler-Kit-2"><strong>Power Profiler Kit II</strong></a>. It immediately caught my attention because it has a high sample rate (10 microseconds per sample) and high precision (200nA). The most important is, IT’S CHEAP. (Well, compared to the expensive digital multimeter).</p>
+<p>Then I bought it immediately.</p>
+<h1 id="How-to-use-it"><a href="#How-to-use-it" class="headerlink" title="How to use it"></a>How to use it</h1><p>In the following section, I’m gonna use PPK2 to measure the power consumption of <a target="_blank" rel="noopener" href="https://www.amebaiot.com/en/amebad/#rtk_amb21">Realtek AmebaD</a>.</p>
+<h2 id="Install-nRF-Connect-for-Desktop"><a href="#Install-nRF-Connect-for-Desktop" class="headerlink" title="Install nRF Connect for Desktop"></a>Install nRF Connect for Desktop</h2><p>Install <a target="_blank" rel="noopener" href="https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop">“nRF Connect for Desktop”</a>. It supports different OS, including Windows, Linux, and macOS.</p>
+<p>After installation, open “nRF Connect for Desktop,” and select “Install” for “Power Profiler.”</p>
+
+
+<p>Then open “Power Profiler.”</p>
+
+
+<h2 id="Set-up-PPK2-configuration"><a href="#Set-up-PPK2-configuration" class="headerlink" title="Set up PPK2 configuration"></a>Set up PPK2 configuration</h2><p>Make sure our PPK2 has connected to the PC&#x2F;laptop. Click “SELECT DEVICE” at the top left corner, and select “PPK2.”</p>
+
+
+<p>On the left panel, we need to put the following settings.</p>
+
+
+<ul>
+<li>Source meter: PPK2 can be a pure Ampere meter or a power supply with the meter. Here we choose “Source meter.”</li>
+<li>Set supply voltage to 3300mV.</li>
+<li>Enable power output: <strong>TURN THIS OPTION OFF NOW</strong>. We’ll turn it on when we start measuring.</li>
+<li>Timestamps: Turning it on will show a timestamp on the X-axis, which is easier to know the time&#x2F;current relation.</li>
+<li>Digital channels: PPK2 can be a simple logic analyzer with 8 channels. If we want to know how a GPIO interrupt wakes up a system, it can show the GPIO signal and the current changes in the same diagram. We turn if off since we won’t use it in this test.</li>
+</ul>
+<h2 id="Connect-boards"><a href="#Connect-boards" class="headerlink" title="Connect boards"></a>Connect boards</h2><p>Now we can connect Nordic PPK2, AmebaD, and an UART adapter as in the following picture.</p>
+
+
+<ul>
+<li>PPK2: There are 2 micro USB slots on PPK2. Plug a micro USB from the PC&#x2F;laptop to “USB DATA&#x2F;POWER” on PPK2. (NOTE: If the target device consumes more than 500mA, then we also need to plug the “POWER ONLY”)</li>
+<li>AmebaD: Please note that we don’t plug in any micro USB to it because there are other components (e.q. FT232) that may consume power.<ul>
+<li>UART Adapter: There are 2 jumpers for UART adapters. The original setting is to connect the UART to the onboard FT232. We’re gonna use our UART adapter for issuing AT commands, so remove these 2 jumpers and connect them to our UART adapter.</li>
+<li>VIN: There is a jumper at the VIN pin for connecting to the onboard power source. We’ll use PPK2’s power source instead. So remove the jumper, and connect the VIN of AmebaD to the VOUT of PPK2.</li>
+<li>GND: Connect the GND of the UART adapter to AmebaD. We also need to connect the GND of PPK2 to AmebaD to complete a whole circuit cycle.</li>
+</ul>
+</li>
+</ul>
+<p>Here is a more detailed picutre of AmebaD connection.</p>
+
+
+<h2 id="Start-measuring"><a href="#Start-measuring" class="headerlink" title="Start measuring"></a>Start measuring</h2><p>We can start the test by clicking “Start” on the left panel. It’ll begin sampling. Then turn on the “Enable power output” option to power on AmebaD.</p>
+<p>Here is my measurement result and its current changes.</p>
+
+
+<ol>
+<li>At 1st bootup, it connected to WiFi AP with a fast connection. Then it idled until entering WiFi LPS.</li>
+<li>I typed a command over UART Adapter and made AmebaD enter deep sleep for around 10 seconds.</li>
+<li>As it woke up from a timeout of deep sleep, it connected to WiFi AP again.</li>
+</ol>
+<p>Here are some details by zoom in the current diagram. We can see the WiFi RX idle costs around 67 mA.</p>
+
+
+<h3 id="WiFi-LPS"><a href="#WiFi-LPS" class="headerlink" title="WiFi LPS"></a>WiFi LPS</h3><p>Here are the details of WiFi LPS. We can see it costs 30.17 mA when WiFi RF is off. We can select a range to see its average current. And we can see the WiFi LPS cost 30.81 mA in average.</p>
+
+
+<h3 id="Deep-Sleep"><a href="#Deep-Sleep" class="headerlink" title="Deep Sleep"></a>Deep Sleep</h3><p>Here is the result of deep sleep. It’s 39.75 uA in average, which is different from the official results. It might be caused by the power leakage from the UART adapter, or from IC deviation.</p>
+
+
+<h3 id="WiFi-TX"><a href="#WiFi-TX" class="headerlink" title="WiFi TX"></a>WiFi TX</h3><p>Here is the detail of when AmebaD sends a WiFi TX package. We can see PPK2 makes several samples for it. The sample interval is 10 microseconds.</p>
+
+
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>I believe Nordic PPK2 is an excellent ampere meter with a good SW. But it wonders me that there is not much discussion on the Internet since it was released last year. I can only see a few Youtube videos that introduce it. I hope this article helps you if you’re looking for an ampere meter for MCUs.</p>
+<p>At least I’m glad I finally have a good ampere meter.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Nordic/" rel="tag"># Nordic</a>
+              <a href="/tags/PPK2/" rel="tag"># PPK2</a>
+              <a href="/tags/Aemba/" rel="tag"># Aemba</a>
+              <a href="/tags/AmebaD/" rel="tag"># AmebaD</a>
+              <a href="/tags/MCU/" rel="tag"># MCU</a>
+              <a href="/tags/Power-Consumption/" rel="tag"># Power Consumption</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/10/12/oridinary-life/" rel="prev" title="????/ Oridinary Life">
+                  <i class="fa fa-angle-left"></i> ????/ Oridinary Life
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/10/24/leetcode-0001-two-sum/" rel="next" title="Leetcode 0001 Two Sum">
+                  Leetcode 0001 Two Sum <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">William Lai</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
