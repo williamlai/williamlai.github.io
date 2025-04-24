@@ -27,6 +27,13 @@
 <meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
 <meta property="og:description" content="It’s an improved project for “Syntiant TinyML Robot Car”. I’ll reuse the current “go” and “stop” voice commands model, and apply it to an RC train.">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/lego_88002_motor.jpg">
+<meta property="og:image" content="http://example.com/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/lego_88002_lines.jpg">
+<meta property="og:image" content="http://example.com/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/drv8871.jpg">
+<meta property="og:image" content="http://example.com/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/tinyml_only.jpg">
+<meta property="og:image" content="http://example.com/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/tinyml_only_train.jpg">
+<meta property="og:image" content="http://example.com/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/voice_controller.jpg">
+<meta property="og:image" content="http://example.com/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/request_receiver.jpg">
 <meta property="article:published_time" content="2022-11-28T20:31:14.000Z">
 <meta property="article:modified_time" content="2025-03-25T14:37:23.273Z">
 <meta property="article:author" content="William Lai">
@@ -40,6 +47,7 @@
 <meta property="article:tag" content="Xiao BLE Sense">
 <meta property="article:tag" content="BLE">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/lego_88002_motor.jpg">
 
 
 <link rel="canonical" href="http://example.com/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/">
@@ -150,7 +158,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -159,7 +167,7 @@
         <span class="site-state-item-name">categories</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -252,10 +260,10 @@
 <h1 id="Select-a-train"><a href="#Select-a-train" class="headerlink" title="Select a train"></a>Select a train</h1><p>My kids already have LEGO trains and tracks, so I can reuse them. When I disassembled the LEGO trains, I found I might need modify and weld the  train’s control board. But my kids might be unhappy if they found I break their toys. So I decided to buy another LEGO train and modify it to my needs.</p>
 <p>The LEGO train I bought is <a target="_blank" rel="noopener" href="https://www.amazon.com/LEGO-Power-Functions-Train-Motor/dp/B004RBKZ2Q">LEGO Power Functions Train Motor 88002</a>. It’s supposed to work with other LEGO Power Functions modules. At least it requires a battery module and a control module. However, I already decided to disassemble and rework it. So I can provide power and control signals by myself.</p>
 <p>Inside the train, there is one brushless motor that drives two gears.</p>
-
+<img src="/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/lego_88002_motor.jpg" class="">
 
 <p>I cut the lines and reworked them as Dupont connectors. There are four lines for almost every LEGO Power Function module. The middle two lines are control and data lines, and the left and right lines are power and ground. HOWEVER, as for motor control, the left and right lines are not connected to the motor. We use only the middle two lines for powering and controlling the motor.</p>
-
+<img src="/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/lego_88002_lines.jpg" class="">
 
 <p>The middle two lines represent motor control 1 and 2. Each line is capable of accepting certain voltage signals. Since LEGO Power Functions batter usually needs six AAA batteries, the power source is slightly larger than 9V. So the motor should be at least able to accept a 10V signal.</p>
 <table>
@@ -285,7 +293,7 @@
 <p>It spins fater when we provide higher voltage to it.</p>
 <h1 id="Select-a-motor-drive"><a href="#Select-a-motor-drive" class="headerlink" title="Select a motor drive"></a>Select a motor drive</h1><p>In the <a target="_blank" rel="noopener" href="https://williamlai.github.io/2022/11/01/syntiant-tinyml-robot-car/">“Syntiant TinyML Robot Car”</a> project, I used a TB6612FNG motor driver to drive two motors. Since I only needed to drive one motor this time, I chose another motor driver.</p>
 <p><a target="_blank" rel="noopener" href="https://www.adafruit.com/product/3190">DRV8871</a> is TI’s solution for driving one motor. It’s relatively smaller than L298N. </p>
-
+<img src="/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/drv8871.jpg" class="">
 
 <p>At the bottom, there are input pins.</p>
 <ul>
@@ -300,7 +308,7 @@
 </ul>
 <p>The PWM signals at IN1 and IN2 decide the voltage at motor line 1 and line 2. It’s like it converts digital signals into analog signals.</p>
 <h1 id="First-Try"><a href="#First-Try" class="headerlink" title="First Try"></a>First Try</h1><p>In the first try, I put everything together on the train. The following diagram is the connection.</p>
-
+<img src="/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/tinyml_only.jpg" class="">
 
 <p>In the diagram, there are two batteries: one 9V battery for driving the motor and one 3.7V lithium battery for the TinyML board. The reason for the extra battery is TinyML can’t use 9V as the power source, and 3.7V is not enough for driving the motor because the train is not light enough.</p>
 <p>The TinyML control the DRV8871 with 2 PWM lines as follows.</p>
@@ -325,7 +333,7 @@
 </tbody></table>
 <p>The <code>speed</code> here depends on the battery level. I set the <code>speed</code> to 100 when 9V battery is full.</p>
 <p>The following picture is the assemble result.</p>
-
+<img src="/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/tinyml_only_train.jpg" class="">
 
 <p>Then I put the train on the track. I said, “Go,” and it went expectedly. However, it won’t stop no matter how many times I said “Stop”. I examed it without the motor, and it worked on the “Go” and “Stop” voice commands. It means the issue is related to the noise caused by the motor.</p>
 <p>There are two approaches to deal with the noise issue.</p>
@@ -338,14 +346,14 @@
 <h2 id="Seeed-Studio-XIAO-nRF52840-Sense"><a href="#Seeed-Studio-XIAO-nRF52840-Sense" class="headerlink" title="Seeed Studio XIAO nRF52840 Sense"></a>Seeed Studio XIAO nRF52840 Sense</h2><p>Seeed Studio XIAO is a series of development boards with small sizes. And <a target="_blank" rel="noopener" href="https://www.seeedstudio.com/Seeed-XIAO-BLE-Sense-nRF52840-p-5253.html">Seeed Studio XIAO nRF52840 Sense</a> (Xiao nRF52840 , in short) is the one with Nordic nRF52840 and onboard IMU and PDM. The design makes it easy to validate the power consumption because there are not many parts on the board. It also has plenty of pins.</p>
 <p>It supports <a target="_blank" rel="noopener" href="https://wiki.seeedstudio.com/XIAO_BLE/">Arduino APIs</a> including Arduino BLE library, so we can implement BLE applicaion easily.</p>
 <h2 id="Voice-Controller"><a href="#Voice-Controller" class="headerlink" title="Voice Controller"></a>Voice Controller</h2><p>The voice controller consists of one Xiao nRF52840 sense and the TinyML board.</p>
-
+<img src="/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/voice_controller.jpg" class="">
 
 <p>The TinyML board stays with the same image that was downloaded from Edge Impulse. The inference results are printed out to UART.</p>
 <p>The Xiao nRF52840 sense receives the inference results from UART, parse it, and sends the command over BLE. The Xiao nRF52840 sense here plays a BLE central role. So it’ll scan the desired BLE peripheral and connect to it.</p>
 <p>I put them on a breadboard because I don’t have to consider the size of the voice controller.</p>
 <p>I put my Arduino code in <a target="_blank" rel="noopener" href="https://gist.github.com/williamlai/26b0e1f5df0d3379aac10c235d134dfd">ble_peripheral_rc.ino</a>.</p>
 <h2 id="Request-Receiver"><a href="#Request-Receiver" class="headerlink" title="Request Receiver"></a>Request Receiver</h2><p>The Request receiver consists of another Xiao nRF52840 sense and the DRV8871 motor driver.</p>
-
+<img src="/2022/11/29/syntiant-tinyml-remote-ctrl-rc-train/request_receiver.jpg" class="">
 
 <p>There are two batteries based on a similar reason on the first try: Xiao nRF52840 sense can’t use 9V as its power source.</p>
 <p>The Xiao nRF52840 sense here acts as BLE peripheral role and waits for a BLE central to connect. Once the connection is established, it starts receiving commands. And it drives the DRV8871 with two PWM lines with an accordingly command.</p>

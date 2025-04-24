@@ -27,6 +27,14 @@
 <meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
 <meta property="og:description" content="Gathering a big enough dataset for training an AI model is always a challenge. In this project, I’m gonna use AWS Polly to generate a voice dataset and use this dataset to train a model on Edge Impuls">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/create_edge_impulse_project.png">
+<meta property="og:image" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/upload_files.png">
+<meta property="og:image" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/impulse_design.png">
+<meta property="og:image" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/syntiant_processing_block.png">
+<meta property="og:image" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/classifier_learning_block.png">
+<meta property="og:image" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/find_posterior_parameters.png">
+<meta property="og:image" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/build_firmware.png">
+<meta property="og:image" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/check_uart_log.jpg">
 <meta property="article:published_time" content="2022-12-05T07:18:17.000Z">
 <meta property="article:modified_time" content="2025-03-25T14:37:38.242Z">
 <meta property="article:author" content="William Lai">
@@ -36,6 +44,7 @@
 <meta property="article:tag" content="AWS">
 <meta property="article:tag" content="Polly">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/create_edge_impulse_project.png">
 
 
 <link rel="canonical" href="http://example.com/2022/12/05/use-aws-polly-generate-audio-dataset/">
@@ -146,7 +155,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -155,7 +164,7 @@
         <span class="site-state-item-name">categories</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -263,29 +272,29 @@
 
 <h1 id="Test-on-Syntiant-TinyML"><a href="#Test-on-Syntiant-TinyML" class="headerlink" title="Test on Syntiant TinyML"></a>Test on Syntiant TinyML</h1><p>Now we have an audio dataset that contains 10K+ files.</p>
 <p>Create a project named “<code>on-off-switch</code>“.</p>
-
+<img src="/2022/12/05/use-aws-polly-generate-audio-dataset/create_edge_impulse_project.png" class="">
 
 <p>Go to “Data acquisition”, and “Upload data”, then upload all files.</p>
-
+<img src="/2022/12/05/use-aws-polly-generate-audio-dataset/upload_files.png" class="">
 
 <p>Create impulse design with the following settings.</p>
-
+<img src="/2022/12/05/use-aws-polly-generate-audio-dataset/impulse_design.png" class="">
 
 <p>In the Syntiant processing block, keep the default settings and “Save parameters”.</p>
-
+<img src="/2022/12/05/use-aws-polly-generate-audio-dataset/syntiant_processing_block.png" class="">
 
 <p>In the classifier learning block, change the number of training cycles to 10, add low noise in the data augmentation, then start training.</p>
-
+<img src="/2022/12/05/use-aws-polly-generate-audio-dataset/classifier_learning_block.png" class="">
 
 <p>As training is complete, go to “Deployment”, select “Build firmware”, choose Syntiant TinyML, set up “Find posterior parameters,” and select “on” and “off” labels.</p>
-
+<img src="/2022/12/05/use-aws-polly-generate-audio-dataset/find_posterior_parameters.png" class="">
 
 <p>Then select “Build”.</p>
-
+<img src="/2022/12/05/use-aws-polly-generate-audio-dataset/build_firmware.png" class="">
 
 <p>When the build is complete, there will be an archived file with a script for uploading firmware to NDP101 and SAMD21. Run the script with TinyML connected to the computer.</p>
 <p>Then we can check the log from UART.</p>
-
+<img src="/2022/12/05/use-aws-polly-generate-audio-dataset/check_uart_log.jpg" class="">
 
 <p>Now we can test it by saying “on” or “off” we’ll see the following logs.</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Predictions:</span><br><span class="line"></span><br><span class="line">    off:        0</span><br><span class="line"></span><br><span class="line">    on:         1</span><br><span class="line"></span><br><span class="line">    z_openset:  0</span><br><span class="line"></span><br><span class="line">Battery = 99%</span><br><span class="line"></span><br><span class="line">Predictions:</span><br><span class="line"></span><br><span class="line">    off:        1</span><br><span class="line"></span><br><span class="line">    on:         0</span><br><span class="line"></span><br><span class="line">    z_openset:  0</span><br><span class="line"></span><br><span class="line">Battery = 99%</span><br></pre></td></tr></table></figure>

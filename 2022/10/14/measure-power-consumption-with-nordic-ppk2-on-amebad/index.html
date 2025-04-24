@@ -27,6 +27,17 @@
 <meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
 <meta property="og:description" content="I bought a Nordic Power Profiler kit II for measuring power consumption for MCUs.">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/install_power_profiler.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/open_power_profiler.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/nrf_connect_select_device.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/ppk2_configuration.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/connect_boards.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/connection_of_amebad.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/overall.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/bootup.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/wifi_lps.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/deep_sleep.png">
+<meta property="og:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/high_sampling_rate.png">
 <meta property="article:published_time" content="2022-10-14T02:32:46.000Z">
 <meta property="article:modified_time" content="2025-03-25T14:36:18.708Z">
 <meta property="article:author" content="William Lai">
@@ -37,6 +48,7 @@
 <meta property="article:tag" content="MCU">
 <meta property="article:tag" content="Power Consumption">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/install_power_profiler.png">
 
 
 <link rel="canonical" href="http://example.com/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/">
@@ -147,7 +159,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -156,7 +168,7 @@
         <span class="site-state-item-name">categories</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -251,16 +263,16 @@
 <h1 id="How-to-use-it"><a href="#How-to-use-it" class="headerlink" title="How to use it"></a>How to use it</h1><p>In the following section, I’m gonna use PPK2 to measure the power consumption of <a target="_blank" rel="noopener" href="https://www.amebaiot.com/en/amebad/#rtk_amb21">Realtek AmebaD</a>.</p>
 <h2 id="Install-nRF-Connect-for-Desktop"><a href="#Install-nRF-Connect-for-Desktop" class="headerlink" title="Install nRF Connect for Desktop"></a>Install nRF Connect for Desktop</h2><p>Install <a target="_blank" rel="noopener" href="https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop">“nRF Connect for Desktop”</a>. It supports different OS, including Windows, Linux, and macOS.</p>
 <p>After installation, open “nRF Connect for Desktop,” and select “Install” for “Power Profiler.”</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/install_power_profiler.png" class="">
 
 <p>Then open “Power Profiler.”</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/open_power_profiler.png" class="">
 
 <h2 id="Set-up-PPK2-configuration"><a href="#Set-up-PPK2-configuration" class="headerlink" title="Set up PPK2 configuration"></a>Set up PPK2 configuration</h2><p>Make sure our PPK2 has connected to the PC&#x2F;laptop. Click “SELECT DEVICE” at the top left corner, and select “PPK2.”</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/nrf_connect_select_device.png" class="">
 
 <p>On the left panel, we need to put the following settings.</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/ppk2_configuration.png" class="">
 
 <ul>
 <li>Source meter: PPK2 can be a pure Ampere meter or a power supply with the meter. Here we choose “Source meter.”</li>
@@ -270,7 +282,7 @@
 <li>Digital channels: PPK2 can be a simple logic analyzer with 8 channels. If we want to know how a GPIO interrupt wakes up a system, it can show the GPIO signal and the current changes in the same diagram. We turn if off since we won’t use it in this test.</li>
 </ul>
 <h2 id="Connect-boards"><a href="#Connect-boards" class="headerlink" title="Connect boards"></a>Connect boards</h2><p>Now we can connect Nordic PPK2, AmebaD, and an UART adapter as in the following picture.</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/connect_boards.png" class="">
 
 <ul>
 <li>PPK2: There are 2 micro USB slots on PPK2. Plug a micro USB from the PC&#x2F;laptop to “USB DATA&#x2F;POWER” on PPK2. (NOTE: If the target device consumes more than 500mA, then we also need to plug the “POWER ONLY”)</li>
@@ -282,11 +294,11 @@
 </li>
 </ul>
 <p>Here is a more detailed picutre of AmebaD connection.</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/connection_of_amebad.png" class="">
 
 <h2 id="Start-measuring"><a href="#Start-measuring" class="headerlink" title="Start measuring"></a>Start measuring</h2><p>We can start the test by clicking “Start” on the left panel. It’ll begin sampling. Then turn on the “Enable power output” option to power on AmebaD.</p>
 <p>Here is my measurement result and its current changes.</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/overall.png" class="">
 
 <ol>
 <li>At 1st bootup, it connected to WiFi AP with a fast connection. Then it idled until entering WiFi LPS.</li>
@@ -294,16 +306,16 @@
 <li>As it woke up from a timeout of deep sleep, it connected to WiFi AP again.</li>
 </ol>
 <p>Here are some details by zoom in the current diagram. We can see the WiFi RX idle costs around 67 mA.</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/bootup.png" class="">
 
 <h3 id="WiFi-LPS"><a href="#WiFi-LPS" class="headerlink" title="WiFi LPS"></a>WiFi LPS</h3><p>Here are the details of WiFi LPS. We can see it costs 30.17 mA when WiFi RF is off. We can select a range to see its average current. And we can see the WiFi LPS cost 30.81 mA in average.</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/wifi_lps.png" class="">
 
 <h3 id="Deep-Sleep"><a href="#Deep-Sleep" class="headerlink" title="Deep Sleep"></a>Deep Sleep</h3><p>Here is the result of deep sleep. It’s 39.75 uA in average, which is different from the official results. It might be caused by the power leakage from the UART adapter, or from IC deviation.</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/deep_sleep.png" class="">
 
 <h3 id="WiFi-TX"><a href="#WiFi-TX" class="headerlink" title="WiFi TX"></a>WiFi TX</h3><p>Here is the detail of when AmebaD sends a WiFi TX package. We can see PPK2 makes several samples for it. The sample interval is 10 microseconds.</p>
-
+<img src="/2022/10/14/measure-power-consumption-with-nordic-ppk2-on-amebad/high_sampling_rate.png" class="">
 
 <h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>I believe Nordic PPK2 is an excellent ampere meter with a good SW. But it wonders me that there is not much discussion on the Internet since it was released last year. I can only see a few Youtube videos that introduce it. I hope this article helps you if you’re looking for an ampere meter for MCUs.</p>
 <p>At least I’m glad I finally have a good ampere meter.</p>

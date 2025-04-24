@@ -27,6 +27,14 @@
 <meta property="og:site_name" content="平凡事物 &#x2F; Oridinary Life">
 <meta property="og:description" content="I built a small robot car that can be controlled by voice. I use the Syntiant TinyML development board to recognize voice commands “go” and “stop,” and then control the TB6612FNG DC motor drive accord">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/tinyml_pinout.png">
+<meta property="og:image" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/rc_model.png">
+<meta property="og:image" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/nn_classifier_keras.png">
+<meta property="og:image" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/TB6612FNG.jpg">
+<meta property="og:image" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/tinyml_pinout2.jpg">
+<meta property="og:image" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/rc_connection.jpg">
+<meta property="og:image" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/car_side.jpg">
+<meta property="og:image" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/car_front.jpg">
 <meta property="og:image" content="http://img.youtube.com/vi/gU9Gy3q3VfY/0.jpg">
 <meta property="article:published_time" content="2022-11-01T09:15:01.000Z">
 <meta property="article:modified_time" content="2025-03-25T14:37:31.418Z">
@@ -38,7 +46,7 @@
 <meta property="article:tag" content="Robot">
 <meta property="article:tag" content="TB6612FNG">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.youtube.com/vi/gU9Gy3q3VfY/0.jpg">
+<meta name="twitter:image" content="http://example.com/2022/11/01/syntiant-tinyml-robot-car/tinyml_pinout.png">
 
 
 <link rel="canonical" href="http://example.com/2022/11/01/syntiant-tinyml-robot-car/">
@@ -149,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -158,7 +166,7 @@
         <span class="site-state-item-name">categories</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -247,7 +255,7 @@
 
 <h1 id="Syntiant-TinyML"><a href="#Syntiant-TinyML" class="headerlink" title="Syntiant TinyML"></a>Syntiant TinyML</h1><p><a target="_blank" rel="noopener" href="https://www.syntiant.com/">Syntiant</a> is known for a provider of edge AI processor soltuion with always-on and low-power. TinyML board is their evaluation board that we can buy on <a target="_blank" rel="noopener" href="https://www.digikey.com/en/products/detail/syntiant-corp./SYNTIANT%2520TINYML/15293343?utm_adgroup=Evaluation%20Boards%20-%20Embedded%20-%20MCU,%20DSP&utm_source=google&utm_medium=cpc&utm_campaign=Shopping_Product_Development%20Boards,%20Kits,%20Programmers_NEW&utm_term=&utm_content=Evaluation%20Boards%20-%20Embedded%20-%20MCU,%20DSP&gclid=CjwKCAjwh4ObBhAzEiwAHzZYU41yvERYEPr_n76biaxilYPi7i3pOVApiZlteuIWdJEWnDL6IRch2RoCaTIQAvD_BwE">Digi-Keys</a>.</p>
 <p>On the TinyML board is NDP101, a deep learning inference processor that costs less than <strong>140uW</strong> and is more efficient than traditional CPU and DSP. It’s suitable for audio and sensor applications. The following picture is its pinout.</p>
-
+<img src="/2022/11/01/syntiant-tinyml-robot-car/tinyml_pinout.png" class="">
 
 <p>In the picture, there is another MCU. It’s Microchip SAMD21 which is the same one as Arduino MKR ZERO. It plays a role in the application process, providing more application peripherals.</p>
 <p>Most of the time, SAMD21, the application processor, can stay in sleep or deep sleep mode until NDP101 inference a different result, then NDP101 wakes SAMD21 up to handle the change.</p>
@@ -266,10 +274,10 @@
 <p>In the tutorial, there is a project on Edge Impulse with a fine dataset and a trained model. We can just clone it and use it on our project.</p>
 <p>The dataset is an audio dataset with three labels, <em>“go,” “stop,” and “z_openset.”</em> The <em>“z_openset”</em> category is for audio that does not belong to <em>“go”</em> and <em>“stop.”</em> The training&#x2F;testing dataset ratio is around 80&#x2F;20, which is the recommended ratio from Edge Impulse.</p>
 <p>The model in the project follows Edge Impules’ pipeline template. The following picture shows the pipeline in the project.</p>
-
+<img src="/2022/11/01/syntiant-tinyml-robot-car/rc_model.png" class="">
 
 <p>The first stage is for the dataset, and the last state is for output features. The second stage is “Audio (Syntiant),” which is the log of MFE (Mel-Filterbank Energy). In this stage, it extracts features from raw samples, which are the inputs of the third stage. The third stage, it’s a neural network classification model, which is a model in Keras.</p>
-
+<img src="/2022/11/01/syntiant-tinyml-robot-car/nn_classifier_keras.png" class="">
 
 <p>The inference requires large computations. In real-time recognition, the device has to complete the inference within the window size. For example, to complete an inference on a 968ms audio sample, the device has to make an inference within a 484ms window size. And the TinyML board is capable of completing the inference within a window size.</p>
 <p>In the deployment, Edge Impulse provides either binaries or source code. Both use Arduino CLI for uploading binaries through a serial interface. The SAMD21 has a USB host HW and provides a serial interface when a USB connects to the TinyML board. SAMD21 is also responsible for uploading the trained model to NDP101. Here I upload the binary first to check if everything works fine.</p>
@@ -277,7 +285,7 @@
 <h2 id="DC-motor-controller"><a href="#DC-motor-controller" class="headerlink" title="DC motor controller"></a>DC motor controller</h2><p>In this model, the robot car can only go or stop, and I can select a DC motor controller that supports only one motor and then apply the same action on two motors. But I prefer to use a motor controller that controls two motors for different actions so that it can do more if I have a model that supports “turn left,” “turn right,” and “backward.”</p>
 <p>L298N is a common choice for controlling 2 DC motors because it can drive a motor that consumes a large current, which means this motor controller is for applications with heavy loading.</p>
 <p>However, the TinyML board is quite small because the NDP101 is small so it can fit into a tiny space. Here I choose <strong>TB6612FNG</strong> as my DC motor controller. TB6612FNG is small, too. And it can drive two motors with a 1.2A maximum each.</p>
-
+<img src="/2022/11/01/syntiant-tinyml-robot-car/TB6612FNG.jpg" class="">
 
 
 <div style="text-align: center;">TB6612FNG image from Sparkfun</div>
@@ -312,7 +320,7 @@
 </ul>
 <h2 id="Add-code-to-control-motors"><a href="#Add-code-to-control-motors" class="headerlink" title="Add code to control motors"></a>Add code to control motors</h2><p>There are five pins available on TinyML for peripheral usage. These pins are connected to SAMD21 so we can program them just like Arduino MKR ZERO.</p>
 <p>There are also pins on test points. But I don’t want to weld the TinyML board and make it look unpleasant, so I won’t use these pins.</p>
-
+<img src="/2022/11/01/syntiant-tinyml-robot-car/tinyml_pinout2.jpg" class="">
 
 <p>We can check the <a target="_blank" rel="noopener" href="https://github.com/arduino/ArduinoCore-samd/blob/master/variants/mkrzero/variant.cpp">MKR ZERO variant table</a> to use these pins in Arduino API.</p>
 <ul>
@@ -350,12 +358,12 @@
 <li>1 2P Rocker switch</li>
 </ul>
 <p>The following diagram shows the connection logic.</p>
-
+<img src="/2022/11/01/syntiant-tinyml-robot-car/rc_connection.jpg" class="">
 
 <p>Here are some pictures of my robot car. The wiring is ugly, but putting all the wires in a small place is pretty hard. I used 3 popsicle sticks to make a triangle-shaped body and white glue to glue the motors. I also use tapes to stable other parts.</p>
+<img src="/2022/11/01/syntiant-tinyml-robot-car/car_side.jpg" class="">
 
-
-
+<img src="/2022/11/01/syntiant-tinyml-robot-car/car_front.jpg" class="">
 
 <p>So the car is pretty small. The heaviest loading would be the battery and the Dupont wires. It’ll be lighter if I use single-core wires, but it’ll make the parts hard to reuse.</p>
 <p>And here is the demo video.</p>
